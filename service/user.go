@@ -12,6 +12,7 @@ import (
 type UserService interface {
 	Register(payload *dto.NewUserRequest) (*dto.NewUserResponse, errs.MessageErr)
 	Login(userLoginRequest *dto.UserLoginRequest) (*dto.UserLoginResponse, errs.MessageErr)
+	Update(payLoad *entity.User, userUpdate *dto.UserUpdateRequest) (*dto.UserUpdateResponse, errs.MessageErr)
 }
 
 type userService struct {
@@ -50,14 +51,43 @@ func (us *userService) Register(payload *dto.NewUserRequest) (*dto.NewUserRespon
 		return nil, err
 	}
 	response = &dto.NewUserResponse{
-		Id:       response.Id,
-		FullName: response.FullName,
-		Email:    response.Email,
+		Id:        response.Id,
+		FullName:  response.FullName,
+		Email:     response.Email,
 		CreatedAt: response.CreatedAt,
 	}
 
 	return response, nil
 }
+
+func (us *userService) Update(payLoad *entity.User, userUpdate *dto.UserUpdateRequest) (*dto.UserUpdateResponse, errs.MessageErr) {
+	err := helper.ValidateStruct(userUpdate)
+
+	if err != nil {
+		return nil, err
+	}
+
+	user := &entity.User{
+		FullName: userUpdate.FullName,
+		Email: userUpdate.Email,
+	}
+
+	updateUser, err := us.userRepo.UpdateUser(payLoad, user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	response := &dto.UserUpdateResponse{
+		Id: updateUser.Id,
+		FullName: updateUser.FullName,
+		Email: updateUser.Email,
+		UpdatedAt: updateUser.UpdatedAt,
+	}
+
+	return response, nil
+}
+
 func (us *userService) Login(newLoginRequest *dto.UserLoginRequest) (*dto.UserLoginResponse, errs.MessageErr) {
 	err := helper.ValidateStruct(newLoginRequest)
 

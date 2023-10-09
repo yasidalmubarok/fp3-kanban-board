@@ -35,11 +35,6 @@ const (
 		id, full_name, email, created_at
 	`
 
-	adminUser = `INSERT INTO "users" 
-	(full_name, email, password, role)
-	VALUES 
-	('Yasid', 'admin@mail.com', '@admin', 'admin');
-	`
 
 	updateUser = `
 		UPDATE "users"
@@ -90,7 +85,7 @@ func (u *userPG) CreateNewUser(userPayLoad *entity.User) (*dto.NewUserResponse, 
 	return &user, nil
 }
 
-func (u *userPG) UpdateUser(userPayload *entity.User) (*dto.UserUpdateResponse, errs.MessageErr) {
+func (u *userPG) UpdateUser(oldUser *entity.User, newUser *entity.User) (*entity.User, errs.MessageErr) {
 	tx, err := u.db.Begin()
 
 	if err != nil {
@@ -98,10 +93,7 @@ func (u *userPG) UpdateUser(userPayload *entity.User) (*dto.UserUpdateResponse, 
 		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
-	row := tx.QueryRow(updateUser, userPayload.FullName, userPayload.Email)
-
-	var user dto.UserUpdateResponse
-	err = row.Scan(&user.Id, &user.FullName, &user.Email, &user.UpdatedAt)
+	_, err = tx.Exec(updateUser, newUser.FullName, newUser.Email, oldUser.Id)
 
 	if err != nil {
 		tx.Rollback()
@@ -115,7 +107,7 @@ func (u *userPG) UpdateUser(userPayload *entity.User) (*dto.UserUpdateResponse, 
 		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
-	return &user, nil
+	return oldUser, nil
 }
 
 func (u *userPG) GetUserByEmail(email string) (*entity.User, errs.MessageErr) {

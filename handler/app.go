@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"final-project/handler/user_handler"
 	"final-project/infrastructure/config"
 	"final-project/infrastructure/database"
 	"final-project/repository/user_repo/user_pg"
@@ -19,7 +20,7 @@ func StartApp() {
 	//Dependency Injection
 	userRepo := user_pg.NewUserPG(db)
 	userService := service.NewUserService(userRepo)
-	userHandler := NewUserHandler(userService)
+	userHandler := user_handler.NewUserHandler(userService)
 
 	
 
@@ -30,6 +31,8 @@ func StartApp() {
 		userRoute.POST("/register", userHandler.Register)
 
 		userRoute.POST("/login", userHandler.Login)
+
+		userRoute.PUT("/update-account")
 	}
 
 	route.Run(":" + config.AppConfig().Port)

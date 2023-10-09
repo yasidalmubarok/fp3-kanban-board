@@ -1,7 +1,8 @@
-package handler
+package user_handler
 
 import (
 	"final-project/dto"
+	"final-project/entity"
 	"final-project/pkg/errs"
 	"final-project/service"
 	"net/http"
@@ -59,4 +60,30 @@ func (uh *userHandler) Login(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, response)
+}
+
+func (uh *userHandler) Update(ctx *gin.Context) {
+	var userUpdateRequest dto.UserUpdateRequest
+
+	userData, ok := ctx.MustGet("userData").(*entity.User)
+
+	if !ok {
+		errData := errs.NewBadRequest("Failed get user data!!")
+		ctx.JSON(errData.Status(), errData)
+		return
+	}
+	if err := ctx.ShouldBindJSON(&userUpdateRequest); err != nil {
+		errData := errs.NewUnprocessibleEntityError(err.Error())
+		ctx.JSON(errData.Status(), errData)
+		return
+	}
+
+	updateUser, err := uh.userService.Update(userData, &userUpdateRequest)
+
+	if err != nil {
+		ctx.JSON(err.Status(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, updateUser)
 }

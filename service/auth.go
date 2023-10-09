@@ -1,92 +1,102 @@
 package service
 
-// import (
-// 	"final-project/entity"
-// 	"final-project/pkg/errs"
-// 	"final-project/pkg/helper"
-// 	"final-project/repository/category_repo"
-// 	"final-project/repository/task_repo"
-// 	"final-project/repository/user_repo"
-// 	"fmt"
+import (
+	"final-project/entity"
+	"final-project/pkg/errs"
+	"final-project/repository/task_repo"
+	"final-project/repository/user_repo"
 
-// 	"github.com/gin-gonic/gin"
-// )
+	"github.com/gin-gonic/gin"
+)
 
-// type AuthService interface {
-// 	Authentication() gin.HandlerFunc
-// 	Authorization() gin.HandlerFunc
-// }
+type AuthService interface {
+	Authentication() gin.HandlerFunc
+	AdminAuthorization() gin.HandlerFunc
+	TaskAuthorization() gin.HandlerFunc
+}
 
-// type authService struct {
-// 	userRepo     user_repo.Repository
-// 	taskRepo     task_repo.Repository
-// 	categoryRepo category_repo.Repository
-// }
+type authService struct {
+	userRepo user_repo.Repository
+	// taskRepo taskrepository.TaskRepository
+}
 
-// func NewAuthService(userRepo user_repo.Repository, taskRepo task_repo.Repository, categotyRepo category_repo.Repository) AuthService {
-// 	return &authService{
-// 		userRepo: userRepo,
-// 		taskRepo: taskRepo,
-// 	}
-// }
+func NewAuthService(userRepo user_repo.Repository, taskRepo task_repo.Repository) AuthService {
+	return &authService{
+		userRepo: userRepo,
+		// taskRepo: taskRepo,
+	}
+}
 
-// func (a *authService) Authorization() gin.HandlerFunc {
-// 	return func(ctx *gin.Context) {
-// 		user := ctx.MustGet("userData").(entity.User)
+func (a *authService) Authentication() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		bearerToken := ctx.GetHeader("Authorization")
 
-// 		movieId, err := helper.GetParamId(ctx, "movieId") // 7
+		var user entity.User
 
-// 		if err != nil {
-// 			fmt.Printf("[Authorization]: %s\n", err.Error())
-// 			ctx.AbortWithStatusJSON(err.Status(), err)
-// 			return
-// 		}
+		if err := user.ValidateToken(bearerToken); err != nil {
+			ctx.AbortWithStatusJSON(err.Status(), err)
+			return
+		}
 
-// 		movie, err := a.taskRepo.GetMovieById(movieId)
+		result, err := a.userRepo.GetUserById(user.Id)
+		if err != nil {
+			ctx.AbortWithStatusJSON(err.Status(), err)
+			return
+		}
 
-// 		if err != nil {
-// 			fmt.Printf("[Authorization]: %s\n", err.Error())
-// 			ctx.AbortWithStatusJSON(err.Status(), err)
-// 			return
-// 		}
+		ctx.Set("userData", result)
+		ctx.Next()
+	}
+}
 
-// 		if movie.UserId != user.Id {
-// 			unauthorizedErr := errs.NewUnauthorizedError("you are not authorized to modify the movie data")
-// 			ctx.AbortWithStatusJSON(unauthorizedErr.Status(), unauthorizedErr)
-// 			return
-// 		}
+func (a *authService) AdminAuthorization() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		userData, ok := ctx.MustGet("userData").(*entity.User)
+		if !ok {
+			newError := errs.NewBadRequest("Failed to get user data")
+			ctx.AbortWithStatusJSON(newError.Status(), newError)
+			return
+		}
 
-// 		ctx.Next()
+		if userData.Role != "admin" {
+			newError := errs.NewUnauthorizedError("You're not authorized to access this endpoint")
+			ctx.AbortWithStatusJSON(newError.Status(), newError)
+			return
+		}
 
-// 	}
-// }
+		ctx.Next()
+	}
+}
 
-// func (a *authService) Authentication() gin.HandlerFunc {
-// 	return func(ctx *gin.Context) {
-// 		var invalidTokenErr = errs.NewUnauthenticatedError("invalid token")
-// 		bearerToken := ctx.GetHeader("Authorization")
+func (a *authService) TaskAuthorization() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// userData, ok := ctx.MustGet("userData").(*entity.User)
+		// if !ok {
+		// 	newError := errs.NewBadRequest("Failed to get user data")
+		// 	ctx.AbortWithStatusJSON(newError.StatusCode(), newError)
+		// 	return
+		// }
 
-// 		var user entity.User
+		// taskID := ctx.Param("taskID")
+		// taskIDUint, err := strconv.ParseUint(taskID, 10, 32)
+		// if err != nil {
+		// 	newError := errs.NewBadRequest("Task id should be an unsigned integer")
+		// 	ctx.AbortWithStatusJSON(newError.StatusCode(), newError)
+		// 	return
+		// }
 
-// 		err := user.ValidateToken(bearerToken)
+		// task, err2 := a.taskRepo.GetTaskByID(uint(taskIDUint))
+		// if err2 != nil {
+		// 	ctx.AbortWithStatusJSON(err2.StatusCode(), err2)
+		// 	return
+		// }
 
-// 		if err != nil {
-// 			fmt.Printf("[Authentication]: %s\n", err.Error())
-// 			ctx.AbortWithStatusJSON(err.Status(), err)
-// 			return
-// 		}
+		// if task.UserID != userData.ID {
+		// 	newError := errs.NewUnauthorized("You're not authorized to modify this task")
+		// 	ctx.AbortWithStatusJSON(newError.StatusCode(), newError)
+		// 	return
+		// }
 
-// 		result, err := a.userRepo.GetUserByEmail(user.Email)
-
-// 		if err != nil {
-// 			ctx.AbortWithStatusJSON(invalidTokenErr.Status(), invalidTokenErr)
-// 			return
-// 		}
-
-// 		_ = result
-
-// 		ctx.Set("userData", user)
-
-// 		ctx.Next()
-// 	}
-// }
+		// ctx.Next()
+	}
+}
