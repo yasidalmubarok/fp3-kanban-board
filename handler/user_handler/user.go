@@ -4,17 +4,18 @@ import (
 	"final-project/dto"
 	"final-project/entity"
 	"final-project/pkg/errs"
-	"final-project/service"
+	"final-project/service/user_service"
+
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type userHandler struct {
-	userService service.UserService
+	userService user_service.UserService
 }
 
-func NewUserHandler(userService service.UserService) userHandler {
+func NewUserHandler(userService user_service.UserService) userHandler {
 	return userHandler{
 		userService: userService,
 	}

@@ -1,9 +1,8 @@
-package service
+package auth_service
 
 import (
 	"final-project/entity"
 	"final-project/pkg/errs"
-	"final-project/repository/task_repo"
 	"final-project/repository/user_repo"
 
 	"github.com/gin-gonic/gin"
@@ -20,7 +19,8 @@ type authService struct {
 	// taskRepo taskrepository.TaskRepository
 }
 
-func NewAuthService(userRepo user_repo.Repository, taskRepo task_repo.Repository) AuthService {
+// , taskRepo task_repo.Repository
+func NewAuthService(userRepo user_repo.Repository) AuthService {
 	return &authService{
 		userRepo: userRepo,
 		// taskRepo: taskRepo,
