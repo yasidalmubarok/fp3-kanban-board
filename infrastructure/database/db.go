@@ -135,9 +135,5 @@ func InitiliazeDatabase() {
 }
 
 func GetDatabaseInstance() *sql.DB {
-	if db == nil {
-		log.Panic("DB is still nill!!")
-	}
-
 	return db
 }

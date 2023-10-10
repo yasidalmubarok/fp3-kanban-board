@@ -29,22 +29,29 @@ func NewAuthService(userRepo user_repo.Repository) AuthService {
 
 func (a *authService) Authentication() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		var invalidTokenErr = errs.NewUnauthenticatedError("invalid token")
 		bearerToken := ctx.GetHeader("Authorization")
 
 		var user entity.User
 
-		if err := user.ValidateToken(bearerToken); err != nil {
-			ctx.AbortWithStatusJSON(err.Status(), err)
-			return
-		}
+		err := user.ValidateToken(bearerToken)
 
-		result, err := a.userRepo.GetUserById(user.Id)
 		if err != nil {
 			ctx.AbortWithStatusJSON(err.Status(), err)
 			return
 		}
 
-		ctx.Set("userData", result)
+		result, err := a.userRepo.GetUserByEmail(user.Email)
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(invalidTokenErr.Status(), invalidTokenErr)
+			return
+		}
+
+		_ = result
+
+		ctx.Set("userData", user)
+
 		ctx.Next()
 	}
 }

@@ -13,12 +13,28 @@ import (
 
 const (
 	getUserByEmail = `
-		SELECT id, email, password FROM "users"
+		SELECT
+			id, 
+			full_name, 
+			email, 
+			password, 
+			role, 
+			created_at, 
+			updated_at
+		FROM "users"
 		WHERE email = $1;
 	`
 
 	getUserById = `
-		SELECT id, email, password FROM "users"
+		SELECT
+			id, 
+			full_name, 
+			email, 
+			password, 
+			role, 
+			created_at, 
+			updated_at
+		FROM "users"
 		WHERE id = $1;
 	`
 
@@ -32,17 +48,18 @@ const (
 		)
 		VALUES ($1, $2, $3, 'member')
 		RETURNING
-		id, full_name, email, created_at
+			id, full_name, email, created_at;
 	`
-
 
 	updateUser = `
 		UPDATE "users"
-		SET "full_name" = $2,
-		"email" = $3
-		WHERE "id" = $1
+		SET 
+			full_name = $2,
+			email = $3,
+			updated_at = now()
+		WHERE id = $1
 		RETURNING
-			id, full_name, email, updated_at
+			id, full_name, email, updated_at;
 	`
 )
 
@@ -72,7 +89,7 @@ func (u *userPG) CreateNewUser(userPayLoad *entity.User) (*dto.NewUserResponse, 
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError(err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	err = tx.Commit()
@@ -85,7 +102,7 @@ func (u *userPG) CreateNewUser(userPayLoad *entity.User) (*dto.NewUserResponse, 
 	return &user, nil
 }
 
-func (u *userPG) UpdateUser(oldUser *entity.User, newUser *entity.User) (*entity.User, errs.MessageErr) {
+func (u *userPG) UpdateUser(userPayLoad *entity.User) (*dto.UserUpdateResponse, errs.MessageErr) {
 	tx, err := u.db.Begin()
 
 	if err != nil {
@@ -93,21 +110,28 @@ func (u *userPG) UpdateUser(oldUser *entity.User, newUser *entity.User) (*entity
 		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
-	_, err = tx.Exec(updateUser, newUser.FullName, newUser.Email, oldUser.Id)
+	row := tx.QueryRow(updateUser, userPayLoad.Id, userPayLoad.FullName, userPayLoad.Email)
+
+	var userUpdate dto.UserUpdateResponse
+	err = row.Scan(
+		&userUpdate.Id,
+		&userUpdate.FullName,
+		&userUpdate.Email,
+		&userUpdate.UpdatedAt,
+	)
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong")
+		return nil, errs.NewInternalServerError("something went wrong "+ err.Error())
 	}
 
 	err = tx.Commit()
-
 	if err != nil {
 		tx.Rollback()
 		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
-	return oldUser, nil
+	return &userUpdate, nil
 }
 
 func (u *userPG) GetUserByEmail(email string) (*entity.User, errs.MessageErr) {
@@ -115,7 +139,7 @@ func (u *userPG) GetUserByEmail(email string) (*entity.User, errs.MessageErr) {
 
 	row := u.db.QueryRow(getUserByEmail, email)
 
-	err := row.Scan(&user.Id, &user.Email, &user.Password)
+	err := row.Scan(&user.Id, &user.FullName, &user.Email, &user.Password, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
@@ -130,9 +154,9 @@ func (u *userPG) GetUserByEmail(email string) (*entity.User, errs.MessageErr) {
 func (u *userPG) GetUserById(userId int) (*entity.User, errs.MessageErr) {
 	var user entity.User
 
-	row := u.db.QueryRow(getUserByEmail, userId)
+	row := u.db.QueryRow(getUserById, userId)
 
-	err := row.Scan(&user.Id, &user.Email, &user.Password)
+	err := row.Scan(&user.Id, &user.FullName, &user.Email, &user.Password, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {

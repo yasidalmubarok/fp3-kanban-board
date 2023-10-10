@@ -3,7 +3,6 @@ package entity
 import (
 	"final-project/infrastructure/config"
 	"final-project/pkg/errs"
-	"fmt"
 	"strings"
 	"time"
 
@@ -52,7 +51,7 @@ func (u *User) tokenClaim() jwt.MapClaims {
 		"full_name": u.FullName,
 		"id":        u.Id,
 		"email":     u.Email,
-		"exp":    time.Now().Add(1 * time.Hour).Unix(),
+		"exp":       time.Now().Add(1 * time.Hour).Unix(),
 	}
 }
 
@@ -106,13 +105,13 @@ func (u *User) ValidateToken(bearerToken string) errs.MessageErr {
 	isBearer := strings.HasPrefix(bearerToken, "Bearer")
 
 	if !isBearer {
-		return invalidTokenErr
+		return errs.NewUnauthenticatedError("token should be Bearer")
 	}
 
-	splitToken := strings.Split(bearerToken, " ")
+	splitToken := strings.Fields(bearerToken)
 
 	if len(splitToken) != 2 {
-		return invalidTokenErr
+		return errs.NewUnauthenticatedError("invalid token")
 	}
 
 	tokenString := splitToken[1]
@@ -126,8 +125,7 @@ func (u *User) ValidateToken(bearerToken string) errs.MessageErr {
 	var mapClaims jwt.MapClaims
 
 	if claims, ok := token.Claims.(jwt.MapClaims); !ok || !token.Valid {
-		fmt.Println("[ValidateToken] not valid:", err, ok, token.Valid)
-		return invalidTokenErr
+		return errs.NewUnauthenticatedError("invalid token")
 	} else {
 		mapClaims = claims
 	}

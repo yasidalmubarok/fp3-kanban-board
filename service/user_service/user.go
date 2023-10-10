@@ -12,7 +12,7 @@ import (
 type UserService interface {
 	Register(payload *dto.NewUserRequest) (*dto.NewUserResponse, errs.MessageErr)
 	Login(userLoginRequest *dto.UserLoginRequest) (*dto.UserLoginResponse, errs.MessageErr)
-	Update(payLoad *entity.User, userUpdate *dto.UserUpdateRequest) (*dto.UserUpdateResponse, errs.MessageErr)
+	Update(userId int, userUpdate *dto.UserUpdateRequest) (*dto.UserUpdateResponse, errs.MessageErr)
 }
 
 type userService struct {
@@ -60,29 +60,43 @@ func (us *userService) Register(payload *dto.NewUserRequest) (*dto.NewUserRespon
 	return response, nil
 }
 
-func (us *userService) Update(payLoad *entity.User, userUpdate *dto.UserUpdateRequest) (*dto.UserUpdateResponse, errs.MessageErr) {
-	err := helper.ValidateStruct(userUpdate)
+func (us *userService) Update(userId int, userPayload *dto.UserUpdateRequest) (*dto.UserUpdateResponse, errs.MessageErr) {
+	err := helper.ValidateStruct(userPayload)
 
 	if err != nil {
 		return nil, err
+	}
+	
+	updateUser, err := us.userRepo.GetUserById(userId)
+
+	if err != nil {
+		if err.Status() == http.StatusNotFound {
+			return nil, errs.NewBadRequest("invalid user")
+		}
+		return nil, err
+	}
+
+	if updateUser.Id != userId {
+		return nil, errs.NewNotFoundError("invalid user")
 	}
 
 	user := &entity.User{
-		FullName: userUpdate.FullName,
-		Email: userUpdate.Email,
+		Id:       userId,
+		FullName: userPayload.FullName,
+		Email: userPayload.Email,
 	}
 
-	updateUser, err := us.userRepo.UpdateUser(payLoad, user)
+	response, err := us.userRepo.UpdateUser(user)
 
 	if err != nil {
 		return nil, err
 	}
 
-	response := &dto.UserUpdateResponse{
-		Id: updateUser.Id,
-		FullName: updateUser.FullName,
-		Email: updateUser.Email,
-		UpdatedAt: updateUser.UpdatedAt,
+	response = &dto.UserUpdateResponse{
+		Id: response.Id,
+		FullName: response.FullName,
+		Email: response.Email,
+		UpdatedAt: response.UpdatedAt,
 	}
 
 	return response, nil

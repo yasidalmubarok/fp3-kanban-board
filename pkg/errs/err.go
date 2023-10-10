@@ -61,6 +61,14 @@ func NewBadRequest(message string) MessageErr {
 	}
 }
 
+func BadRequest(message string) error {
+	return &ErrorData{
+		ErrMessage: message,
+		ErrStatus:  http.StatusBadRequest,
+		ErrError:   "BAD_REQUEST",
+	}
+}
+
 func NewInternalServerError(message string) MessageErr {
 	return &ErrorData{
 		ErrMessage: message,
