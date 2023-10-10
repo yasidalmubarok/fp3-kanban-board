@@ -61,6 +61,13 @@ const (
 		RETURNING
 			id, full_name, email, updated_at;
 	`
+
+	deleteUser = `
+		DELETE FROM
+			"users"
+		WHERE
+			id = $1;
+	`
 )
 
 type userPG struct {
@@ -132,6 +139,31 @@ func (u *userPG) UpdateUser(userPayLoad *entity.User) (*dto.UserUpdateResponse, 
 	}
 
 	return &userUpdate, nil
+}
+
+func(u *userPG) DeleteUser(userId int) errs.MessageErr{
+	tx, err := u.db.Begin()
+	
+	if err != nil {
+		tx.Rollback()
+		return errs.NewInternalServerError("something went wrong")
+	}
+
+	_, err = tx.Exec(deleteUser, userId)
+
+	if err != nil {
+		tx.Rollback()
+		return errs.NewInternalServerError("something went wrong")
+	}
+
+	err = tx.Commit()
+
+	if err != nil {
+		tx.Rollback()
+		return errs.NewInternalServerError("something went wrong")
+	}
+	
+	return nil
 }
 
 func (u *userPG) GetUserByEmail(email string) (*entity.User, errs.MessageErr) {

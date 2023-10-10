@@ -13,6 +13,7 @@ type UserService interface {
 	Register(payload *dto.NewUserRequest) (*dto.NewUserResponse, errs.MessageErr)
 	Login(userLoginRequest *dto.UserLoginRequest) (*dto.UserLoginResponse, errs.MessageErr)
 	Update(userId int, userUpdate *dto.UserUpdateRequest) (*dto.UserUpdateResponse, errs.MessageErr)
+	Delete(userId int) (*dto.DeleteResponse, errs.MessageErr)
 }
 
 type userService struct {
@@ -66,7 +67,7 @@ func (us *userService) Update(userId int, userPayload *dto.UserUpdateRequest) (*
 	if err != nil {
 		return nil, err
 	}
-	
+
 	updateUser, err := us.userRepo.GetUserById(userId)
 
 	if err != nil {
@@ -83,7 +84,7 @@ func (us *userService) Update(userId int, userPayload *dto.UserUpdateRequest) (*
 	user := &entity.User{
 		Id:       userId,
 		FullName: userPayload.FullName,
-		Email: userPayload.Email,
+		Email:    userPayload.Email,
 	}
 
 	response, err := us.userRepo.UpdateUser(user)
@@ -93,9 +94,9 @@ func (us *userService) Update(userId int, userPayload *dto.UserUpdateRequest) (*
 	}
 
 	response = &dto.UserUpdateResponse{
-		Id: response.Id,
-		FullName: response.FullName,
-		Email: response.Email,
+		Id:        response.Id,
+		FullName:  response.FullName,
+		Email:     response.Email,
 		UpdatedAt: response.UpdatedAt,
 	}
 
@@ -124,6 +125,29 @@ func (us *userService) Login(newLoginRequest *dto.UserLoginRequest) (*dto.UserLo
 
 	response := dto.UserLoginResponse{
 		Token: token,
+	}
+
+	return &response, nil
+}
+
+func (us *userService) Delete(userId int) (*dto.DeleteResponse, errs.MessageErr) {
+	user, err := us.userRepo.GetUserById(userId)
+
+	if err != nil {
+		if err.Status() == http.StatusNotFound {
+			return nil, errs.NewBadRequest("invalid user")
+		}
+		return nil, err
+	}
+
+	if user.Id != userId {
+		return nil, errs.NewNotFoundError("invalid user")
+	}
+
+	us.userRepo.DeleteUser(userId)
+
+	response := dto.DeleteResponse{
+		Message: "your account has been successfully deleted",
 	}
 
 	return &response, nil

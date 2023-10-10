@@ -40,3 +40,7 @@ type UserUpdateResponse struct {
 	Email    string    `json:"email"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
+
+type DeleteResponse struct {
+	Message string `json:"message"`
+}

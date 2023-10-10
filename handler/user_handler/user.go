@@ -88,3 +88,21 @@ func (uh *userHandler) Update(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (uh *userHandler) Delete(ctx *gin.Context)  {
+	user, ok := ctx.MustGet("userData").(entity.User)
+
+	if !ok {
+		errData := errs.NewBadRequest("Failed get user data!!")
+		ctx.AbortWithStatusJSON(errData.Status(), errData)
+		return
+	}
+	response, err := uh.userService.Delete(user.Id)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(err.Status(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}

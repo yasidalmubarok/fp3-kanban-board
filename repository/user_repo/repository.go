@@ -11,4 +11,5 @@ type Repository interface {
 	GetUserByEmail(userEmail string) (*entity.User, errs.MessageErr)
 	GetUserById(userId int) (*entity.User, errs.MessageErr) 
 	UpdateUser(userPayLoad *entity.User) (*dto.UserUpdateResponse, errs.MessageErr)
+	DeleteUser(userId int) errs.MessageErr
 }
