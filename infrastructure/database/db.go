@@ -2,9 +2,7 @@ package database
 
 import (
 	"database/sql"
-	"final-project/entity"
 	"final-project/infrastructure/config"
-	"final-project/pkg/errs"
 	"fmt"
 	"log"
 
@@ -79,7 +77,7 @@ func handleCreateRequiredTables() {
 				CONSTRAINT tasks_user_id_fk
 					FOREIGN KEY(user_id)
 						REFERENCES users(id)
-							ON DELETE SET NULL,
+							ON DELETE CASCADE,
 				CONSTRAINT tasks_category_id_fk
 					FOREIGN KEY(category_id)
 						REFERENCES categories(id)	
@@ -112,21 +110,6 @@ func handleCreateRequiredTables() {
 	if err != nil {
 		log.Panic("error occured while trying to create required tables:", err)
 	}
-}
-
-func seedAdmin(db *sql.DB) {
-    // Inisialisasi akun admin
-    admin := &entity.User{
-        FullName: "admin",
-        Email:    "admin@hacktiv8.com",
-        Password: "admin123",
-        Role:     "admin",
-    }
-
-    // Hash password
-    errs.CheckErr(admin.HashPassword())
-
-    log.Println("Admin account seed success!")
 }
 
 func InitiliazeDatabase() {

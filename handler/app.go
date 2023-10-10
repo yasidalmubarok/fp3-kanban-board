@@ -32,8 +32,12 @@ func StartApp() {
 		userRoute.POST("/register", userHandler.Register)
 		userRoute.POST("/login", userHandler.Login)
 		userRoute.PUT("/update-account", authService.Authentication(), userHandler.Update)
-		userRoute.DELETE("delete", authService.Authentication(), userHandler.Delete)
+		userRoute.DELETE("/delete-account", authService.Authentication(), userHandler.Delete)
 	}
 
+	userRoute = route.Group("/categories")
+	{
+		
+	}
 	route.Run(":" + config.AppConfig().Port)
 }

@@ -7,6 +7,7 @@ import (
 	"final-project/entity"
 	"final-project/pkg/errs"
 	"final-project/repository/user_repo"
+	"log"
 
 	_ "github.com/lib/pq"
 )
@@ -67,6 +68,17 @@ const (
 			"users"
 		WHERE
 			id = $1;
+	`
+
+	adminQuery = `
+		INSERT 
+		INTO users (
+			full_name, 
+			email, 
+			password, 
+			role,
+		)
+		VALUES ($1, $2, $3, $4);
 	`
 )
 
@@ -129,7 +141,7 @@ func (u *userPG) UpdateUser(userPayLoad *entity.User) (*dto.UserUpdateResponse, 
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong "+ err.Error())
+		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
 	}
 
 	err = tx.Commit()
@@ -141,9 +153,9 @@ func (u *userPG) UpdateUser(userPayLoad *entity.User) (*dto.UserUpdateResponse, 
 	return &userUpdate, nil
 }
 
-func(u *userPG) DeleteUser(userId int) errs.MessageErr{
+func (u *userPG) DeleteUser(userId int) errs.MessageErr {
 	tx, err := u.db.Begin()
-	
+
 	if err != nil {
 		tx.Rollback()
 		return errs.NewInternalServerError("something went wrong")
@@ -162,7 +174,7 @@ func(u *userPG) DeleteUser(userId int) errs.MessageErr{
 		tx.Rollback()
 		return errs.NewInternalServerError("something went wrong")
 	}
-	
+
 	return nil
 }
 
@@ -198,4 +210,26 @@ func (u *userPG) GetUserById(userId int) (*entity.User, errs.MessageErr) {
 	}
 
 	return &user, nil
+}
+
+func seedAdmin(db *sql.DB) {
+	// Inisialisasi akun admin
+	admin := &entity.User{
+		FullName: "admin",
+		Email:    "admin@hacktiv8.com",
+		Password: "admin123",
+		Role:     "admin",
+	}
+
+	// Hash password
+	if err := admin.HashPassword(); err != nil {
+		return
+	}
+
+	_, err := db.Exec(adminQuery, admin.FullName, admin.Email, admin.Password, admin.Role)
+    if err != nil {
+        return 
+    }
+
+	log.Println("Admin account seed success!")
 }
