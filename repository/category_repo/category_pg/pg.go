@@ -5,6 +5,9 @@ import (
 	"final-project/dto"
 	"final-project/entity"
 	"final-project/pkg/errs"
+	"final-project/repository/category_repo"
+
+	_ "github.com/lib/pq"
 )
 
 const (
@@ -21,6 +24,12 @@ const (
 
 type categoryPG struct {
 	db *sql.DB
+}
+
+func NewCategoryRepo(db *sql.DB) category_repo.Repository {
+	return &categoryPG{
+		db: db,
+	}
 }
 
 func (c *categoryPG) Create(categoryPayLoad *entity.Category) (*dto.NewCategoryResponse, errs.MessageErr) {
@@ -41,7 +50,7 @@ func (c *categoryPG) Create(categoryPayLoad *entity.Category) (*dto.NewCategoryR
 		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
-	if err := tx.Commit(); err != nil{
+	if err := tx.Commit(); err != nil {
 		tx.Rollback()
 		return nil, errs.NewInternalServerError("something went wrong")
 	}

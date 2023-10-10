@@ -16,6 +16,13 @@ type categoryService struct {
 	categoryRepo category_repo.Repository
 }
 
+//factory function
+func NewCategorySevice(categoryRepo category_repo.Repository) CategoryService{
+	return &categoryService{
+		categoryRepo: categoryRepo,
+	}
+}
+
 //Implements service interface
 func (cs *categoryService) Create(categoryPayLoad *dto.NewCategoryRequest) (*dto.NewCategoryResponse, errs.MessageErr)  {
 	err := helper.ValidateStruct(categoryPayLoad)
@@ -28,7 +35,7 @@ func (cs *categoryService) Create(categoryPayLoad *dto.NewCategoryRequest) (*dto
 		Type: categoryPayLoad.Type,
 	}
 
-	response, err := cs.categoryRepo.CreateCategories(category)
+	response, err := cs.categoryRepo.Create(category)
 
 	if err != nil {
 		return nil, err
