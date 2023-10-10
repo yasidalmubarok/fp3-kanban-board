@@ -1,4 +1,4 @@
-package service
+package category_service
 
 import (
 	"final-project/dto"
