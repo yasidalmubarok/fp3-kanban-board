@@ -7,5 +7,5 @@ import (
 )
 
 type Repository interface {
-	CreateCategories(categoryPayLoad *entity.Category) (*dto.NewCategoryRequest, errs.MessageErr)
+	CreateCategories(categoryPayLoad *entity.Category) (*dto.NewCategoryResponse, errs.MessageErr)
 }
