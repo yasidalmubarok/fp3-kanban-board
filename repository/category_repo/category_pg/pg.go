@@ -20,6 +20,14 @@ const (
 		RETURNING
 			id, type, created_at;
 	`
+
+	getCategoryWithTask = `
+		SELECT "c"."id", "c"."type", "c"."updated_at", "c"."created_at",
+		"t"."id", "t"."title", "t"."description", "t"."user_id", "t"."category_id", "t"."created_at", "t"."updated_at"
+		from "categories" as "c"
+		LEFT JOIN "tasks" as "t" ON "c"."id" = "i"."category_id"
+		ORDER BY "c"."id" ASC
+	`
 )
 
 type categoryPG struct {
@@ -56,4 +64,43 @@ func (c *categoryPG) Create(categoryPayLoad *entity.Category) (*dto.NewCategoryR
 	}
 
 	return &category, nil
+}
+
+func (c categoryPG) Read() ([]category_repo.CategoryTaskMapped, errs.MessageErr) {
+	categoryTasks := []category_repo.CategoryTask{}
+
+	rows, err := c.db.Query(getCategoryWithTask)
+
+	if err != nil {
+		return nil, errs.NewInternalServerError("something went wrong")
+	}
+
+	for rows.Next() {
+		var categoryTask category_repo.CategoryTask
+
+		err := rows.Scan(
+			&categoryTask.Category.Id,
+			&categoryTask.Category.Type,
+			&categoryTask.Category.CreatedAt,
+			&categoryTask.Category.UpdatedAt,
+
+			&categoryTask.Task.Id,
+			&categoryTask.Task.Title,
+			&categoryTask.Task.Description,
+			&categoryTask.Task.UserId,
+			&categoryTask.Task.CategoryId,
+			&categoryTask.Task.CreatedAt,
+			&categoryTask.Task.UpdatedAt,
+		)
+
+		if err != nil {
+			return nil, errs.NewInternalServerError("something went wrong")
+		}
+
+		categoryTasks = append(categoryTasks, categoryTask)
+	}
+
+	var result category_repo.CategoryTaskMapped
+
+	return result.HandleMappingCategoryWithTask(categoryTasks), nil
 }
