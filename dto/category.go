@@ -21,3 +21,9 @@ type GetCategoryResponse struct {
 	CreatedAt time.Time   `json:"created_at"`
 	Tasks     []TaskDatas `json:"Tasks"`
 }
+
+type GetResponse struct {
+	StatusCode int         `json:"status_code"`
+	Message    string      `json:"message"`
+	Data       interface{} `json:"data"`
+}
