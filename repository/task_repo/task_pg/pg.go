@@ -5,6 +5,7 @@ import (
 	"final-project/dto"
 	"final-project/entity"
 	"final-project/pkg/errs"
+	"final-project/repository/task_repo"
 )
 
 const(
@@ -22,6 +23,12 @@ const(
 
 type taskPG struct {
 	db *sql.DB
+}
+
+func NewTaskRepo(db *sql.DB) task_repo.Repository{
+	return &taskPG{
+		db: db,
+	}
 }
 
 func (t taskPG) CreateNewTask(taskPayLoad *entity.Task) (*dto.NewTasksResponse, errs.MessageErr) {

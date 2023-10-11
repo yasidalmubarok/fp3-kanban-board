@@ -66,7 +66,7 @@ func (cs *categoryService) Get() (*dto.GetResponse, errs.MessageErr) {
 
 	for _, eachCategory := range categories {
 		category := dto.GetCategoryResponse{
-			Id:        uint(eachCategory.Category.Id),
+			Id:        eachCategory.Category.Id,
 			Type:      eachCategory.Category.Type,
 			UpdatedAt: eachCategory.Category.UpdatedAt,
 			CreatedAt: eachCategory.Category.CreatedAt,
@@ -75,11 +75,11 @@ func (cs *categoryService) Get() (*dto.GetResponse, errs.MessageErr) {
 
 		for _, eachTask := range eachCategory.Tasks{
 			task := dto.TaskDatas{
-				Id: uint(eachTask.Id),
+				Id: eachTask.Id,
 				Title: eachTask.Title,
 				Description: eachTask.Description,
-				UserId: uint(eachTask.UserId),
-				CategoryId: uint(eachTask.CategoryId),
+				UserId: eachTask.UserId,
+				CategoryId: eachTask.CategoryId,
 				CreatedAt: category.CreatedAt,
 				UpdatedAt: category.UpdatedAt,
 			}
