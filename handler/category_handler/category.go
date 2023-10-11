@@ -37,3 +37,13 @@ func (ch *categoryHandler) Create(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, response)
 }
+
+func (ch *categoryHandler) Get(ctx *gin.Context) {
+	response, err := ch.categoryService.Get()
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(err.Status(), err)
+		return
+	}
+	ctx.JSON(response.StatusCode, response)
+}
