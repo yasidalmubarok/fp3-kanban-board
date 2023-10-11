@@ -10,7 +10,7 @@ type NewUserRequest struct {
 }
 
 type NewUserResponse struct {
-	Id        int       `json:"id"`
+	Id        uint       `json:"id"`
 	FullName  string    `json:"full_name"`
 	Email     string    `json:"email"`
 	CreatedAt time.Time `json:"createdAt"`
@@ -35,7 +35,7 @@ type UserUpdateRequest struct {
 }
 
 type UserUpdateResponse struct {
-	Id       int       `json:"id"`
+	Id       uint       `json:"id"`
 	FullName string    `json:"full_name"`
 	Email    string    `json:"email"`
 	UpdatedAt time.Time `json:"updatedAt"`

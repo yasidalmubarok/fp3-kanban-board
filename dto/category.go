@@ -8,7 +8,16 @@ type NewCategoryRequest struct {
 }
 
 type NewCategoryResponse struct {
-	Id        int    `json:"id"`
-	Type      string `json:"type"`
+	Id        uint      `json:"id"`
+	Type      string    `json:"type"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+// ====== GET ========
+type GetCategoryResponse struct {
+	Id        uint        `json:"id"`
+	Type      string      `json:"type"`
+	UpdatedAt time.Time   `json:"updated_at"`
+	CreatedAt time.Time   `json:"created_at"`
+	Tasks     []TaskDatas `json:"Tasks"`
 }
