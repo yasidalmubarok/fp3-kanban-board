@@ -6,6 +6,7 @@ import (
 	"final-project/pkg/errs"
 	"final-project/pkg/helper"
 	"final-project/repository/category_repo"
+	"final-project/repository/task_repo"
 	"net/http"
 )
 
@@ -16,12 +17,14 @@ type CategoryService interface {
 
 type categoryService struct {
 	categoryRepo category_repo.Repository
+	taskRepo     task_repo.Repository
 }
 
 // factory function
-func NewCategorySevice(categoryRepo category_repo.Repository) CategoryService {
+func NewCategorySevice(categoryRepo category_repo.Repository, taskRepo task_repo.Repository) CategoryService {
 	return &categoryService{
 		categoryRepo: categoryRepo,
+		taskRepo: taskRepo,
 	}
 }
 
@@ -62,37 +65,10 @@ func (cs *categoryService) Get() (*dto.GetResponse, errs.MessageErr) {
 		return nil, err
 	}
 
-	categoryResult := []dto.GetCategoryResponse{}
-
-	for _, eachCategory := range categories {
-		category := dto.GetCategoryResponse{
-			Id:        eachCategory.Category.Id,
-			Type:      eachCategory.Category.Type,
-			UpdatedAt: eachCategory.Category.UpdatedAt,
-			CreatedAt: eachCategory.Category.CreatedAt,
-			Tasks:     []dto.TaskDatas{},
-		}
-
-		for _, eachTask := range eachCategory.Tasks{
-			task := dto.TaskDatas{
-				Id: eachTask.Id,
-				Title: eachTask.Title,
-				Description: eachTask.Description,
-				UserId: eachTask.UserId,
-				CategoryId: eachTask.CategoryId,
-				CreatedAt: category.CreatedAt,
-				UpdatedAt: category.UpdatedAt,
-			}
-			category.Tasks = append(category.Tasks, task)
-		}
-
-		categoryResult = append(categoryResult, category)
-	}
-
 	response := dto.GetResponse{
 		StatusCode: http.StatusOK,
-		Message: "categories successfully fetched",
-		Data: categoryResult,
+		Message:    "categories successfully fetched",
+		Data:       categories,
 	}
 
 	return &response, nil

@@ -2,13 +2,16 @@ package handler
 
 import (
 	"final-project/handler/category_handler"
+	taks_handler "final-project/handler/task_handler"
 	"final-project/handler/user_handler"
 	"final-project/infrastructure/config"
 	"final-project/infrastructure/database"
 	"final-project/repository/category_repo/category_pg"
+	"final-project/repository/task_repo/task_pg"
 	"final-project/repository/user_repo/user_pg"
 	"final-project/service/auth_service"
 	"final-project/service/category_service"
+	"final-project/service/task_service"
 	"final-project/service/user_service"
 
 	"github.com/gin-gonic/gin"
@@ -25,12 +28,18 @@ func StartApp() {
 	userRepo := user_pg.NewUserPG(db)
 	userService := user_service.NewUserService(userRepo)
 	userHandler := user_handler.NewUserHandler(userService)
-
+	
+	taskRepo := task_pg.NewTaskRepo(db)
 	categoryRepo := category_pg.NewCategoryRepo(db)
-	categoryService := category_service.NewCategorySevice(categoryRepo)
+	
+	taskService := task_service.NewTaskService(taskRepo, categoryRepo, userRepo)
+	categoryService := category_service.NewCategorySevice(categoryRepo, taskRepo)
+	
 	categoryHandler := category_handler.NewCategoryHandler(categoryService)
+	taskHandler := taks_handler.NewTaskHandler(taskService)
+	
 
-	authService := auth_service.NewAuthService(userRepo)
+	authService := auth_service.NewAuthService(userRepo, taskRepo)
 
 	route := gin.Default()
 
@@ -44,7 +53,14 @@ func StartApp() {
 
 	userRoute = route.Group("/categories")
 	{
-		userRoute.POST("", authService.Authentication(), categoryHandler.Create)
+		userRoute.POST("", authService.Authentication(), authService.AdminAuthorization(), categoryHandler.Create)
+		userRoute.GET("", authService.Authentication(), categoryHandler.Get)
 	}
+
+	userRoute = route.Group("/tasks")
+	{
+		userRoute.POST("", authService.Authentication(), taskHandler.Create)
+	}
+
 	route.Run(":" + config.AppConfig().Port)
 }

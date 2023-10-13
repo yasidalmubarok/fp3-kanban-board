@@ -92,12 +92,6 @@ func (u *User) bindTokenToUserEntity(claim jwt.MapClaims) errs.MessageErr {
 		u.Id = int(id)
 	}
 
-	if email, ok := claim["email"].(string); !ok {
-		return invalidTokenErr
-	} else {
-		u.Email = email
-	}
-
 	return nil
 }
 
@@ -125,7 +119,7 @@ func (u *User) ValidateToken(bearerToken string) errs.MessageErr {
 	var mapClaims jwt.MapClaims
 
 	if claims, ok := token.Claims.(jwt.MapClaims); !ok || !token.Valid {
-		return errs.NewUnauthenticatedError("invalid token")
+		return errs.NewUnauthenticatedError("invalid token" + err.Error())
 	} else {
 		mapClaims = claims
 	}

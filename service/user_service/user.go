@@ -34,7 +34,6 @@ func (us *userService) Register(payload *dto.NewUserRequest) (*dto.NewUserRespon
 	}
 
 	user := &entity.User{
-
 		FullName: payload.FullName,
 		Email:    payload.Email,
 		Password: payload.Password,

@@ -10,11 +10,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type taskHandler struct {
+type TaskHandler struct {
 	taskService task_service.TaskService
 }
 
-func (th *taskHandler) Create(ctx *gin.Context) {
+func NewTaskHandler (taskService task_service.TaskService) *TaskHandler{
+	return &TaskHandler{
+		taskService: taskService,
+	}
+}
+
+func (th *TaskHandler) Create(ctx *gin.Context) {
 	user := ctx.MustGet("userData").(entity.User)
 	var newTaskRequest = &dto.NewTasksRequest{}
 
@@ -24,7 +30,7 @@ func (th *taskHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	response, err := th.taskService.Create(user.Id, newTaskRequest)
+	response, err := th.taskService.Create(uint(user.Id), newTaskRequest)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(err.Status(), err)
