@@ -13,7 +13,7 @@ type categoryHandler struct {
 	categoryService category_service.CategoryService
 }
 
-func NewCategoryHandler(categoryService category_service.CategoryService) categoryHandler{
+func NewCategoryHandler(categoryService category_service.CategoryService) categoryHandler {
 	return categoryHandler{
 		categoryService: categoryService,
 	}
@@ -22,7 +22,7 @@ func NewCategoryHandler(categoryService category_service.CategoryService) catego
 func (ch *categoryHandler) Create(ctx *gin.Context) {
 	var newCategoryRequest = &dto.NewCategoryRequest{}
 
-	if err := ctx.ShouldBindJSON(&newCategoryRequest); err != nil {
+	if err := ctx.ShouldBindJSON(newCategoryRequest); err != nil {
 		errBindJson := errs.NewUnprocessibleEntityError("invalid request")
 		ctx.AbortWithStatusJSON(errBindJson.Status(), errBindJson)
 		return

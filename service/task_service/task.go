@@ -9,14 +9,14 @@ import (
 )
 
 type TaskService interface {
-	Create(taskPayLoad *dto.NewTasksRequest) (*dto.NewTasksResponse, errs.MessageErr)
+	Create(userId int, taskPayLoad *dto.NewTasksRequest) (*dto.NewTasksResponse, errs.MessageErr)
 }
 
 type taskService struct {
 	taskRepo task_repo.Repository
 }
 
-func (ts *taskService) Create(taskPayLoad *dto.NewTasksRequest) (*dto.NewTasksResponse, errs.MessageErr) {
+func (ts *taskService) Create(userId uint, taskPayLoad *dto.NewTasksRequest) (*dto.NewTasksResponse, errs.MessageErr) {
 	err := helper.ValidateStruct(taskPayLoad)
 
 	if err != nil {
@@ -40,7 +40,7 @@ func (ts *taskService) Create(taskPayLoad *dto.NewTasksRequest) (*dto.NewTasksRe
 		Title:       response.Title,
 		Status:      response.Status,
 		Description: response.Description,
-		UserId:      response.UserId,
+		UserId:      userId,
 		CategoryId:  response.CategoryId,
 		CreatedAt:   response.CreatedAt,
 	}
