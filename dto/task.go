@@ -3,26 +3,26 @@ package dto
 import "time"
 
 type TaskDatas struct {
-	Id          uint      `json:"id"`
+	Id          int       `json:"id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
-	UserId      uint      `json:"user_id"`
-	CategoryId  uint      `json:"category_id"`
+	UserId      int       `json:"user_id"`
+	CategoryId  int       `json:"category_id"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 type NewTasksRequest struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	CategoryId  uint   `json:"category_id"`
+	Title       string `json:"title" valid:"required~full_name cannot be empty"`
+	Description string `json:"description" valid:"required~full_name cannot be empty"`
+	CategoryId  int    `json:"category_id"`
 }
 
 type NewTasksResponse struct {
-	Id          uint      `json:"id"`
+	Id          int       `json:"id"`
 	Title       string    `json:"title"`
 	Status      bool      `json:"status"`
 	Description string    `json:"description"`
-	UserId      uint      `json:"user_id"`
-	CategoryId  uint      `json:"category_id"`
+	UserId      int       `json:"user_id"`
+	CategoryId  int       `json:"category_id"`
 	CreatedAt   time.Time `json:"created_at"`
 }

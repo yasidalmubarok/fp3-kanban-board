@@ -11,19 +11,20 @@ import (
 const(
 	createTask = `
 		INSERT INTO tasks (
+			user_id,
 			title, 
 			description,
-			category_id,
+			category_id
 		)
-		VALUES ($1, $2, $3)
+		VALUES ($1, $2, $3, $4)
 		RETURNING
-			id, title, status, description, user_id, category_id, created_at;
+			id, title, description, status, user_id, category_id, created_at;
 	`
 
 	getTaskById = `
 		SELECT 
 			t.id,
-			t.title
+			t.title,
 			t.description,
 			t.status,
 			t.user_id,
@@ -43,7 +44,10 @@ const(
 
 
 )
-
+// LEFT JOIN
+// 			categories AS c
+// 		ON
+// 			t.category_id = c.id
 type taskPG struct {
 	db *sql.DB
 }
@@ -59,13 +63,14 @@ func (t *taskPG) CreateNewTask(taskPayLoad *entity.Task) (*dto.NewTasksResponse,
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong")
+		return nil, errs.NewInternalServerError("something went wrong "+ err.Error())
 	}
 
 	var task dto.NewTasksResponse
 
 	row := tx.QueryRow(
 		createTask,
+		taskPayLoad.UserId,
 		taskPayLoad.Title, 
 		taskPayLoad.Description, 
 		taskPayLoad.CategoryId,
@@ -73,8 +78,8 @@ func (t *taskPG) CreateNewTask(taskPayLoad *entity.Task) (*dto.NewTasksResponse,
 	err = row.Scan(
 		&task.Id,
 		&task.Title,
-		&task.Status,
 		&task.Description,
+		&task.Status,
 		&task.UserId,
 		&task.CategoryId,
 		&task.CreatedAt,
@@ -82,19 +87,19 @@ func (t *taskPG) CreateNewTask(taskPayLoad *entity.Task) (*dto.NewTasksResponse,
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong")
+		return nil, errs.NewInternalServerError("something went wrong" + err.Error())
 	}
 
 	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong")
+		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
 	}
 
 	return &task, nil
 }
 
-func (t *taskPG) GetTaskByID(id uint) (*task_repo.TaskUserMapped, errs.MessageErr) {
+func (t *taskPG) GetTaskById(id int) (*task_repo.TaskUserMapped, errs.MessageErr) {
 	var taskUser task_repo.TaskUser
 	
 	err := t.db.QueryRow(getTaskById, id).Scan(
@@ -112,7 +117,7 @@ func (t *taskPG) GetTaskByID(id uint) (*task_repo.TaskUserMapped, errs.MessageEr
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, errs.NewNotFoundError("comment not found")
+			return nil, errs.NewNotFoundError("task not found" + err.Error())
 		}
 		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
 	}

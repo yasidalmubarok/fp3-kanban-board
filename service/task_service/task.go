@@ -8,10 +8,11 @@ import (
 	"final-project/repository/category_repo"
 	"final-project/repository/task_repo"
 	"final-project/repository/user_repo"
+	"net/http"
 )
 
 type TaskService interface {
-	Create(userId uint, taskPayLoad *dto.NewTasksRequest) (*dto.NewTasksResponse, errs.MessageErr)
+	Create(userId int, taskPayLoad *dto.NewTasksRequest) (*dto.NewTasksResponse, errs.MessageErr)
 }
 
 type taskService struct {
@@ -22,26 +23,34 @@ type taskService struct {
 
 func NewTaskService(taskRepo task_repo.Repository, categoryRepo category_repo.Repository, userRepo user_repo.Repository) TaskService {
 	return &taskService{
-		taskRepo: taskRepo,
+		taskRepo:     taskRepo,
 		categoryRepo: categoryRepo,
-		userRepo: userRepo,
+		userRepo:     userRepo,
 	}
 }
 
-func (ts *taskService) Create(userId uint, taskPayLoad *dto.NewTasksRequest) (*dto.NewTasksResponse, errs.MessageErr) {
+func (ts *taskService) Create(userId int, taskPayLoad *dto.NewTasksRequest) (*dto.NewTasksResponse, errs.MessageErr) {
 	err := helper.ValidateStruct(taskPayLoad)
 
 	if err != nil {
 		return nil, err
 	}
 
+	_, err = ts.categoryRepo.ReadById(taskPayLoad.CategoryId)
+
+	if err != nil {
+		if err.Status() == http.StatusNotFound {
+			return nil, err
+		}
+		return nil, err
+	}
+
 	task := &entity.Task{
+		UserId:      userId,
 		Title:       taskPayLoad.Title,
 		Description: taskPayLoad.Description,
 		CategoryId:  taskPayLoad.CategoryId,
-		UserId:      userId,
 	}
-
 	response, err := ts.taskRepo.CreateNewTask(task)
 
 	if err != nil {
@@ -51,8 +60,8 @@ func (ts *taskService) Create(userId uint, taskPayLoad *dto.NewTasksRequest) (*d
 	response = &dto.NewTasksResponse{
 		Id:          response.Id,
 		Title:       response.Title,
-		Status:      response.Status,
 		Description: response.Description,
+		Status:      response.Status,
 		UserId:      response.UserId,
 		CategoryId:  response.CategoryId,
 		CreatedAt:   response.CreatedAt,

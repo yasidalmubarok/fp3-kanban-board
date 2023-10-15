@@ -22,19 +22,36 @@ const (
 	`
 
 	getCategoryWithTask = `
-		SELECT "c"."id", "c"."type", "c"."updated_at", "c"."created_at",
-		"t"."id", "t"."title", "t"."description", "t"."user_id", "t"."category_id", "t"."created_at", "t"."updated_at"
-		from "categories" as "c"
-		LEFT JOIN "tasks" as "t" ON "c"."id" = "i"."category_id"
-		ORDER BY "c"."id" ASC
+		SELECT
+			"c"."id", 
+			"c"."type", 
+			"c"."updated_at", 
+			"c"."created_at",
+			"t"."id", 
+			"t"."title", 
+			"t"."description", 
+			"t"."user_id", 
+			"t"."category_id", 
+			"t"."created_at", 
+			"t"."updated_at"
+		FROM 
+			categories AS "c"
+		LEFT JOIN 
+			"tasks" AS "t" 
+		ON 
+			"c"."id" = "t"."category_id"
+		ORDER BY 
+			"c"."id" 
+		ASC
 	`
 
-	getCategoryWithTaskById = `
-		SELECT "c"."id", "c"."type", "c"."updated_at", "c"."created_at",
-		"t"."id", "t"."title", "t"."description", "t"."user_id", "t"."category_id", "t"."created_at", "t"."updated_at"
-		from "categories" as "c"
-		LEFT JOIN "tasks" as "t" ON "c"."id" = "i"."category_id"
-		ORDER BY "c"."id" ASC
+	checkCategoryId = `
+		SELECT 
+			c.id 
+		FROM 
+			categories AS c
+		WHERE
+			c.id = $1
 	`
 )
 
@@ -74,43 +91,13 @@ func (c *categoryPG) Create(categoryPayLoad *entity.Category) (*dto.NewCategoryR
 	return &category, nil
 }
 
-func (c *categoryPG) ReadById(categoryId uint) (*category_repo.CategoryTaskMapped, errs.MessageErr) {
-	category := category_repo.CategoryTask{}
-
-	row := c.db.QueryRow(getCategoryWithTaskById, categoryId)
-	err := row.Scan(
-		&category.Category.Id,
-		&category.Category.Type,
-		&category.Category.CreatedAt,
-		&category.Category.UpdatedAt,
-		&category.Task.Id,
-		&category.Task.Title,
-		&category.Task.Description,
-		&category.Task.UserId,
-		&category.Task.CategoryId,
-		&category.Task.CreatedAt,
-		&category.Task.UpdatedAt,
-	)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errs.NewInternalServerError("rows not found" + err.Error())
-		}
-		return nil, errs.NewInternalServerError("something went wrong")
-	}
-
-	result := category_repo.CategoryTaskMapped{}
-
-	return result.HandleMappingCategoryWithTaskById(category), nil
-}
-
 func (c categoryPG) Read() ([]category_repo.CategoryTaskMapped, errs.MessageErr) {
 	categoryTasks := []category_repo.CategoryTask{}
 
 	rows, err := c.db.Query(getCategoryWithTask)
 
 	if err != nil {
-		return nil, errs.NewInternalServerError("something went wrong")
+		return nil, errs.NewInternalServerError("something went wrong" + err.Error())
 	}
 
 	for rows.Next() {
@@ -132,7 +119,7 @@ func (c categoryPG) Read() ([]category_repo.CategoryTaskMapped, errs.MessageErr)
 		)
 
 		if err != nil {
-			return nil, errs.NewInternalServerError("something went wrong")
+			return nil, errs.NewInternalServerError("something went wrong" + err.Error())
 		}
 
 		categoryTasks = append(categoryTasks, categoryTask)
@@ -141,4 +128,33 @@ func (c categoryPG) Read() ([]category_repo.CategoryTaskMapped, errs.MessageErr)
 	var result category_repo.CategoryTaskMapped
 
 	return result.HandleMappingCategoryWithTask(categoryTasks), nil
+}
+
+func (c *categoryPG) ReadById(categoryId int) (*category_repo.CategoryTaskMapped, errs.MessageErr) {
+	category := category_repo.CategoryTask{}
+	row := c.db.QueryRow(checkCategoryId, categoryId)
+	err := row.Scan(
+		&category.Category.Id,
+		// &category.Category.Type,
+		// &category.Category.CreatedAt,
+		// &category.Category.UpdatedAt,
+
+		// &category.Task.Id,
+		// &category.Task.Title,
+		// &category.Task.Description,
+		// &category.Task.UserId,
+		// &category.Task.CategoryId,
+		// &category.Task.CreatedAt,
+		// &category.Task.UpdatedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errs.NewInternalServerError("rows not found" + err.Error())
+		}
+		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+	}
+
+	result := category_repo.CategoryTaskMapped{}
+	return result.HandleMappingCategoryWithTaskById(category), nil
 }

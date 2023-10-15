@@ -14,7 +14,7 @@ type TaskHandler struct {
 	taskService task_service.TaskService
 }
 
-func NewTaskHandler (taskService task_service.TaskService) *TaskHandler{
+func NewTaskHandler(taskService task_service.TaskService) *TaskHandler {
 	return &TaskHandler{
 		taskService: taskService,
 	}
@@ -30,7 +30,7 @@ func (th *TaskHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	response, err := th.taskService.Create(uint(user.Id), newTaskRequest)
+	response, err := th.taskService.Create(user.Id, newTaskRequest)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(err.Status(), err)

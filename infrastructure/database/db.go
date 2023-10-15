@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"final-project/infrastructure/config"
+	"final-project/repository/user_repo/user_pg"
 	"fmt"
 	"log"
 
@@ -41,6 +42,8 @@ func handleDatabaseConnection() {
 }
 
 func handleCreateRequiredTables() {
+	user_pg.SeedAdmin(db)
+
 	const (
 		userTable = `
 			CREATE TABLE IF NOT EXISTS "users" (
@@ -69,7 +72,7 @@ func handleCreateRequiredTables() {
 				id SERIAL PRIMARY KEY,
 				title VARCHAR(255) NOT NULL,
 				description VARCHAR(255) NOT NULL,
-				status BOOL NOT NULL,
+				status BOOL DEFAULT false,
 				user_id INT NOT NULL, 
 				category_id INT NOT NULL,
 				created_at timestamptz DEFAULT NOW(),

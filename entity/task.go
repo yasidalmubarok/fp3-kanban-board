@@ -12,12 +12,12 @@ import "time"
 // 			updated_at timestamptz DEFAULT NOW()
 
 type Task struct {
-	Id          uint      `json:"id"`
+	Id          int      `json:"id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Status      bool      `json:"status"`
-	UserId      uint      `json:"userId"`
-	CategoryId  uint      `json:"categoryId"`
+	UserId      int      `json:"userId"`
+	CategoryId  int      `json:"categoryId"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 }

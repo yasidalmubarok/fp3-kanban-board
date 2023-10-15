@@ -72,13 +72,14 @@ const (
 
 	adminQuery = `
 		INSERT 
-		INTO users (
-			full_name, 
-			email, 
-			password, 
-			role,
-		)
-		VALUES ($1, $2, $3, $4);
+		INTO 
+			users (
+				full_name, 
+				email, 
+				password, 
+				role
+			)
+		VALUES ('admin', 'admin@admin.com', 'admin123', 'admin');
 	`
 )
 
@@ -212,7 +213,7 @@ func (u *userPG) GetUserById(userId int) (*entity.User, errs.MessageErr) {
 	return &user, nil
 }
 
-func seedAdmin(db *sql.DB) {
+func SeedAdmin(db *sql.DB) {
 	// Inisialisasi akun admin
 	admin := &entity.User{
 		FullName: "admin",

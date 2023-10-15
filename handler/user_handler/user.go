@@ -15,8 +15,8 @@ type userHandler struct {
 	userService user_service.UserService
 }
 
-func NewUserHandler(userService user_service.UserService) userHandler {
-	return userHandler{
+func NewUserHandler(userService user_service.UserService) *userHandler {
+	return &userHandler{
 		userService: userService,
 	}
 }

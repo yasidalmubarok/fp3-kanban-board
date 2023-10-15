@@ -39,7 +39,7 @@ func StartApp() {
 	taskHandler := taks_handler.NewTaskHandler(taskService)
 	
 
-	authService := auth_service.NewAuthService(userRepo, taskRepo)
+	authService := auth_service.NewAuthService(userRepo, taskRepo, categoryRepo)
 
 	route := gin.Default()
 

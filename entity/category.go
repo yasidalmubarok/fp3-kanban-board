@@ -7,7 +7,7 @@ import "time"
 // created_at timestamptz DEFAULT NOW(),
 // updated_at timestamptz DEFAULT NOW()
 type Category struct {
-	Id        uint      `json:"id"`
+	Id        int      `json:"id"`
 	Type      string    `json:"type"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`

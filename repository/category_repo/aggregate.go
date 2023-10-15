@@ -11,21 +11,21 @@ type CategoryTask struct {
 }
 
 type Task struct {
-	Id          uint      `json:"id"`
+	Id          int       `json:"id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Status      bool      `json:"status"`
-	UserId      uint      `json:"userId"`
-	CategoryId  uint      `json:"categoryId"`
+	UserId      int       `json:"userId"`
+	CategoryId  int       `json:"categoryId"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 type CategoryTaskMapped struct {
-	Id        uint      `json:"id"`
+	Id        int       `json:"id"`
 	Type      string    `json:"type"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
-	Tasks     Task `json:"task"`
+	Tasks     Task      `json:"task"`
 }
 
 func (ctm *CategoryTaskMapped) HandleMappingCategoryWithTask(categoryTask []CategoryTask) []CategoryTaskMapped {
@@ -57,19 +57,19 @@ func (ctm *CategoryTaskMapped) HandleMappingCategoryWithTask(categoryTask []Cate
 
 func (ctm *CategoryTaskMapped) HandleMappingCategoryWithTaskById(categoryTask CategoryTask) *CategoryTaskMapped {
 	return &CategoryTaskMapped{
-		Id:        categoryTask.Category.Id,
-		Type:      categoryTask.Category.Type,
-		CreatedAt: categoryTask.Category.CreatedAt,
-		UpdatedAt: categoryTask.Category.UpdatedAt,
-		Tasks: Task{
-			Id:          categoryTask.Task.Id,
-			Title:       categoryTask.Task.Title,
-			Description: categoryTask.Task.Description,
-			Status:      categoryTask.Task.Status,
-			UserId:      categoryTask.Task.UserId,
-			CategoryId:  categoryTask.Task.CategoryId,
-			CreatedAt:   categoryTask.Task.CreatedAt,
-			UpdatedAt:   categoryTask.Task.UpdatedAt,
-		},
+		Id: categoryTask.Category.Id,
+		// Type:      categoryTask.Category.Type,
+		// CreatedAt: categoryTask.Category.CreatedAt,
+		// UpdatedAt: categoryTask.Category.UpdatedAt,
+		// Tasks: Task{
+		// 	Id:          categoryTask.Task.Id,
+		// 	Title:       categoryTask.Task.Title,
+		// 	Description: categoryTask.Task.Description,
+		// 	Status:      categoryTask.Task.Status,
+		// 	UserId:      categoryTask.Task.UserId,
+		// 	CategoryId:  categoryTask.Task.CategoryId,
+		// 	CreatedAt:   categoryTask.Task.CreatedAt,
+		// 	UpdatedAt:   categoryTask.Task.UpdatedAt,
+		// },
 	}
 }

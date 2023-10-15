@@ -10,7 +10,7 @@ type NewUserRequest struct {
 }
 
 type NewUserResponse struct {
-	Id        uint       `json:"id"`
+	Id        int       `json:"id"`
 	FullName  string    `json:"full_name"`
 	Email     string    `json:"email"`
 	CreatedAt time.Time `json:"createdAt"`

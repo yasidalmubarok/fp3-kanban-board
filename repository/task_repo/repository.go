@@ -8,5 +8,5 @@ import (
 
 type Repository interface {
 	CreateNewTask(taskPayLoad *entity.Task) (*dto.NewTasksResponse, errs.MessageErr)
-	GetTaskByID(id uint) (*TaskUserMapped, errs.MessageErr)
+	GetTaskById(id int) (*TaskUserMapped, errs.MessageErr)
 }

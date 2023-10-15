@@ -8,14 +8,14 @@ type NewCategoryRequest struct {
 }
 
 type NewCategoryResponse struct {
-	Id        uint      `json:"id"`
+	Id        int       `json:"id"`
 	Type      string    `json:"type"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 // ====== GET ========
 type GetCategoryResponse struct {
-	Id        uint        `json:"id"`
+	Id        int         `json:"id"`
 	Type      string      `json:"type"`
 	UpdatedAt time.Time   `json:"updated_at"`
 	CreatedAt time.Time   `json:"created_at"`
@@ -23,7 +23,7 @@ type GetCategoryResponse struct {
 }
 
 type GetResponse struct {
-	StatusCode int         `json:"status_code"`
-	Message    string      `json:"message"`
-	Data       interface{} `json:"data"`
+	StatusCode int    `json:"status_code"`
+	Message    string `json:"message"`
+	Data       any    `json:"data"`
 }
