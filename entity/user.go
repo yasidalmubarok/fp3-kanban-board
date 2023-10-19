@@ -15,7 +15,7 @@ type User struct {
 	FullName  string    `json:"full_name"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
-	Role      string    `json:"role" valid:"required,admin|member"`
+	Role      string    `json:"role" binding:"required,oneof= member admin"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
@@ -48,10 +48,9 @@ func (u *User) GenerateToken() string {
 
 func (u *User) tokenClaim() jwt.MapClaims {
 	return jwt.MapClaims{
-		"full_name": u.FullName,
 		"id":        u.Id,
-		"email":     u.Email,
-		"exp":       time.Now().Add(1 * time.Hour).Unix(),
+		"full_name": u.FullName,
+		"role":      u.Role,
 	}
 }
 

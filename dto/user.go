@@ -44,3 +44,7 @@ type UserUpdateResponse struct {
 type DeleteResponse struct {
 	Message string `json:"message"`
 }
+
+type AdminResponse struct {
+	Message string `json:"message"`
+}

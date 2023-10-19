@@ -7,7 +7,6 @@ import (
 	"final-project/entity"
 	"final-project/pkg/errs"
 	"final-project/repository/user_repo"
-	"log"
 
 	_ "github.com/lib/pq"
 )
@@ -25,6 +24,15 @@ const (
 		FROM "users"
 		WHERE email = $1;
 	`
+	getUserByRole = `
+		SELECT
+			id,
+			full_name,
+			email,
+			role
+		FROM users
+		WHERE role = $1;
+	`
 
 	getUserById = `
 		SELECT
@@ -36,7 +44,8 @@ const (
 			created_at, 
 			updated_at
 		FROM "users"
-		WHERE id = $1;
+		WHERE 
+			id = $1;
 	`
 
 	createNewUser = `
@@ -71,16 +80,17 @@ const (
 	`
 
 	adminQuery = `
-		INSERT 
-		INTO 
-			users (
-				full_name, 
-				email, 
-				password, 
+		INSERT INTO users
+			(
+				full_name,
+				email,
+				password,
 				role
 			)
-		VALUES ('admin', 'admin@admin.com', 'admin123', 'admin');
+		VALUES ('admin', 'admin@hacktivate.com', $1, 'admin')
 	`
+
+	
 )
 
 type userPG struct {
@@ -213,24 +223,26 @@ func (u *userPG) GetUserById(userId int) (*entity.User, errs.MessageErr) {
 	return &user, nil
 }
 
-func SeedAdmin(db *sql.DB) {
-	// Inisialisasi akun admin
-	admin := &entity.User{
-		FullName: "admin",
-		Email:    "admin@hacktiv8.com",
-		Password: "admin123",
-		Role:     "admin",
+// ============ Admin ==============
+func (u *userPG) Admin(userPayLoad *entity.User) errs.MessageErr {
+	tx, err := u.db.Begin()
+
+	if err != nil {
+		tx.Rollback()
+		return errs.NewInternalServerError("something went wrong")
+	}
+	_, err = tx.Exec(adminQuery, userPayLoad.Password)
+
+	if err != nil {
+		tx.Rollback()
+		return errs.NewInternalServerError("something went wrong " + err.Error())
 	}
 
-	// Hash password
-	if err := admin.HashPassword(); err != nil {
-		return
+	err = tx.Commit()
+
+	if err != nil {
+		tx.Rollback()
+		return errs.NewInternalServerError("something went wrong")
 	}
-
-	_, err := db.Exec(adminQuery, admin.FullName, admin.Email, admin.Password, admin.Role)
-    if err != nil {
-        return 
-    }
-
-	log.Println("Admin account seed success!")
+	return nil
 }

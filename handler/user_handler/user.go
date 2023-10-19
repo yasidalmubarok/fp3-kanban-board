@@ -106,3 +106,24 @@ func (uh *userHandler) Delete(ctx *gin.Context)  {
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (uh *userHandler) Admin(ctx *gin.Context) {
+	newUserRequest := &dto.NewUserRequest{}
+
+	if err := ctx.ShouldBindJSON(&newUserRequest); err != nil {
+		errBindJson := errs.NewUnprocessibleEntityError("invalid request")
+
+		ctx.JSON(errBindJson.Status(), errBindJson)
+		return
+	}
+	newUserRequest.Role = "admin"
+
+	response, err := uh.userService.Admin(newUserRequest)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(err.Status(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}

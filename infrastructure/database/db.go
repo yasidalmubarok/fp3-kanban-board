@@ -2,8 +2,8 @@ package database
 
 import (
 	"database/sql"
+	"final-project/entity"
 	"final-project/infrastructure/config"
-	"final-project/repository/user_repo/user_pg"
 	"fmt"
 	"log"
 
@@ -42,7 +42,6 @@ func handleDatabaseConnection() {
 }
 
 func handleCreateRequiredTables() {
-	user_pg.SeedAdmin(db)
 
 	const (
 		userTable = `
@@ -112,12 +111,47 @@ func handleCreateRequiredTables() {
 
 	if err != nil {
 		log.Panic("error occured while trying to create required tables:", err)
+		return
 	}
+}
+
+func seedAdmin() {
+	admin := &entity.User{
+		FullName: "admin",
+		Email:    "admin@admin.com",
+		Password: "admin123",
+		Role:     "admin",
+	}
+
+	// Hash password
+	if err := admin.HashPassword(); err != nil {
+		return
+	}
+
+	insertQueryAdmin := `
+        INSERT INTO users (
+            full_name,
+            email,
+            password,
+            role
+        )
+        VALUES ($1, $2, $3, $4)
+    `
+
+	_, err := db.Exec(insertQueryAdmin, admin.FullName, admin.Email, admin.Password, admin.Role)
+
+	if err != nil {
+		log.Println("Failed to seed admin account:", err)
+		return
+	}
+
+	log.Println("Admin account seed success!")
 }
 
 func InitiliazeDatabase() {
 	handleDatabaseConnection()
 	handleCreateRequiredTables()
+	seedAdmin()
 }
 
 func GetDatabaseInstance() *sql.DB {

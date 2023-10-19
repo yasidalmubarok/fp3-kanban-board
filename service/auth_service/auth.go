@@ -19,16 +19,16 @@ type AuthService interface {
 }
 
 type authService struct {
-	userRepo user_repo.Repository
-	taskRepo task_repo.Repository
+	userRepo     user_repo.Repository
+	taskRepo     task_repo.Repository
 	categoryRepo category_repo.Repository
 }
 
 // , taskRepo task_repo.Repository
 func NewAuthService(userRepo user_repo.Repository, taskRepo task_repo.Repository, categoryRepo category_repo.Repository) AuthService {
 	return &authService{
-		userRepo: userRepo,
-		taskRepo: taskRepo,
+		userRepo:     userRepo,
+		taskRepo:     taskRepo,
 		categoryRepo: categoryRepo,
 	}
 }
@@ -36,7 +36,6 @@ func NewAuthService(userRepo user_repo.Repository, taskRepo task_repo.Repository
 func (a *authService) Authentication() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var invalidTokenErr = errs.NewUnauthenticatedError("invalid token")
-
 		bearerToken := ctx.GetHeader("Authorization")
 
 		var user entity.User
@@ -56,20 +55,18 @@ func (a *authService) Authentication() gin.HandlerFunc {
 		}
 
 		ctx.Set("userData", user)
-
 		ctx.Next()
 	}
 }
 
 func (a *authService) AdminAuthorization() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		userData, ok := ctx.MustGet("userData").(entity.User)
+		userData, ok := ctx.MustGet("userData").(*entity.User)
 		if !ok {
 			newError := errs.NewBadRequest("Failed to get user data")
 			ctx.AbortWithStatusJSON(newError.Status(), newError)
 			return
 		}
-
 		if userData.Role != "admin" {
 			newError := errs.NewUnauthorizedError("You're not authorized to access this endpoint")
 			ctx.AbortWithStatusJSON(newError.Status(), newError)

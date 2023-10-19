@@ -37,7 +37,6 @@ func StartApp() {
 	
 	categoryHandler := category_handler.NewCategoryHandler(categoryService)
 	taskHandler := taks_handler.NewTaskHandler(taskService)
-	
 
 	authService := auth_service.NewAuthService(userRepo, taskRepo, categoryRepo)
 
@@ -49,6 +48,7 @@ func StartApp() {
 		userRoute.POST("/login", userHandler.Login)
 		userRoute.PUT("/update-account", authService.Authentication(), userHandler.Update)
 		userRoute.DELETE("/delete-account", authService.Authentication(), userHandler.Delete)
+		userRoute.POST("/admin", userHandler.Admin)
 	}
 
 	userRoute = route.Group("/categories")

@@ -14,6 +14,7 @@ type UserService interface {
 	Login(userLoginRequest *dto.UserLoginRequest) (*dto.UserLoginResponse, errs.MessageErr)
 	Update(userId int, userUpdate *dto.UserUpdateRequest) (*dto.UserUpdateResponse, errs.MessageErr)
 	Delete(userId int) (*dto.DeleteResponse, errs.MessageErr)
+	Admin(payload *dto.NewUserRequest) (*dto.AdminResponse, errs.MessageErr)
 }
 
 type userService struct {
@@ -151,3 +152,37 @@ func (us *userService) Delete(userId int) (*dto.DeleteResponse, errs.MessageErr)
 
 	return &response, nil
 }
+
+func (us *userService) Admin(payload *dto.NewUserRequest) (*dto.AdminResponse, errs.MessageErr) {
+	err :=  helper.ValidateStruct(payload)
+
+	if err != nil {
+		return nil, err
+	}
+
+	admin := &entity.User{
+		FullName: "admin",
+		Email: "admin@hacktivate.com",
+		Password: "admin477",
+		Role: "admin",
+	}
+
+	err = admin.HashPassword()
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = us.userRepo.Admin(admin)
+
+	if err != nil {
+		return nil, err
+	}
+
+	response := dto.AdminResponse{
+		Message: "Seeding admin has been successfully",
+	}
+	return &response, nil
+}
+
+
