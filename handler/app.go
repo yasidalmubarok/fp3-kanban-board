@@ -28,13 +28,13 @@ func StartApp() {
 	userRepo := user_pg.NewUserPG(db)
 	userService := user_service.NewUserService(userRepo)
 	userHandler := user_handler.NewUserHandler(userService)
-	
+
 	taskRepo := task_pg.NewTaskRepo(db)
 	categoryRepo := category_pg.NewCategoryRepo(db)
-	
+
 	taskService := task_service.NewTaskService(taskRepo, categoryRepo, userRepo)
 	categoryService := category_service.NewCategorySevice(categoryRepo, taskRepo)
-	
+
 	categoryHandler := category_handler.NewCategoryHandler(categoryService)
 	taskHandler := taks_handler.NewTaskHandler(taskService)
 
@@ -60,6 +60,7 @@ func StartApp() {
 	userRoute = route.Group("/tasks")
 	{
 		userRoute.POST("", authService.Authentication(), taskHandler.Create)
+		userRoute.GET("", authService.Authentication(), taskHandler.Get)
 	}
 
 	route.Run(":" + config.AppConfig().Port)

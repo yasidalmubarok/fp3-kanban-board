@@ -6,6 +6,7 @@ import (
 	"final-project/entity"
 	"final-project/pkg/errs"
 	"final-project/repository/category_repo"
+	"fmt"
 
 	_ "github.com/lib/pq"
 )
@@ -25,8 +26,8 @@ const (
 		SELECT
 			"c"."id", 
 			"c"."type", 
-			"c"."updated_at", 
 			"c"."created_at",
+			"c"."updated_at", 
 			"t"."id", 
 			"t"."title", 
 			"t"."description", 
@@ -35,13 +36,13 @@ const (
 			"t"."created_at", 
 			"t"."updated_at"
 		FROM 
-			categories AS "c"
+			categories AS c
 		LEFT JOIN 
-			"tasks" AS "t" 
+			tasks AS t 
 		ON 
-			"c"."id" = "t"."category_id"
+			t.category_id = c.id 
 		ORDER BY 
-			"c"."id" 
+			c.id 
 		ASC
 	`
 
@@ -108,7 +109,6 @@ func (c categoryPG) Read() ([]category_repo.CategoryTaskMapped, errs.MessageErr)
 			&categoryTask.Category.Type,
 			&categoryTask.Category.CreatedAt,
 			&categoryTask.Category.UpdatedAt,
-
 			&categoryTask.Task.Id,
 			&categoryTask.Task.Title,
 			&categoryTask.Task.Description,
@@ -117,9 +117,9 @@ func (c categoryPG) Read() ([]category_repo.CategoryTaskMapped, errs.MessageErr)
 			&categoryTask.Task.CreatedAt,
 			&categoryTask.Task.UpdatedAt,
 		)
-
+		fmt.Println("id task: ", categoryTask.Task.UserId)
 		if err != nil {
-			return nil, errs.NewInternalServerError("something went wrong" + err.Error())
+			return nil, errs.NewInternalServerError("something went wrong " + err.Error())
 		}
 
 		categoryTasks = append(categoryTasks, categoryTask)
@@ -130,23 +130,10 @@ func (c categoryPG) Read() ([]category_repo.CategoryTaskMapped, errs.MessageErr)
 	return result.HandleMappingCategoryWithTask(categoryTasks), nil
 }
 
-func (c *categoryPG) ReadById(categoryId int) (*category_repo.CategoryTaskMapped, errs.MessageErr) {
-	category := category_repo.CategoryTask{}
+func (c *categoryPG) CheckCategoryId(categoryId int) (*entity.Category, errs.MessageErr) {
+	category := entity.Category{}
 	row := c.db.QueryRow(checkCategoryId, categoryId)
-	err := row.Scan(
-		&category.Category.Id,
-		// &category.Category.Type,
-		// &category.Category.CreatedAt,
-		// &category.Category.UpdatedAt,
-
-		// &category.Task.Id,
-		// &category.Task.Title,
-		// &category.Task.Description,
-		// &category.Task.UserId,
-		// &category.Task.CategoryId,
-		// &category.Task.CreatedAt,
-		// &category.Task.UpdatedAt,
-	)
+	err := row.Scan(&category.Id)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -155,6 +142,5 @@ func (c *categoryPG) ReadById(categoryId int) (*category_repo.CategoryTaskMapped
 		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
 	}
 
-	result := category_repo.CategoryTaskMapped{}
-	return result.HandleMappingCategoryWithTaskById(category), nil
+	return &category, nil
 }

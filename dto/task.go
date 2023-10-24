@@ -26,3 +26,20 @@ type NewTasksResponse struct {
 	CategoryId  int       `json:"category_id"`
 	CreatedAt   time.Time `json:"created_at"`
 }
+
+type GetTaskResponse struct {
+	Id          int        `json:"id"`
+	Title       string     `json:"title"`
+	Status      bool       `json:"status"`
+	Description string     `json:"description"`
+	UserId      int        `json:"user_id"`
+	CategoryId  int        `json:"category_id"`
+	CreatedAt   time.Time  `json:"created_at"`
+	Users       []GetUsers `json:"Users"`
+}
+
+type GetResponseTasks struct {
+	StatusCode int    `json:"status_code"`
+	Message    string `json:"message"`
+	Data       any    `json:"data"`
+}

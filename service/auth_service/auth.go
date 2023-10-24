@@ -61,7 +61,7 @@ func (a *authService) Authentication() gin.HandlerFunc {
 
 func (a *authService) AdminAuthorization() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		userData, ok := ctx.MustGet("userData").(*entity.User)
+		userData, ok := ctx.MustGet("userData").(entity.User)
 		if !ok {
 			newError := errs.NewBadRequest("Failed to get user data")
 			ctx.AbortWithStatusJSON(newError.Status(), newError)

@@ -14,7 +14,6 @@ type Task struct {
 	Id          int       `json:"id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
-	Status      bool      `json:"status"`
 	UserId      int       `json:"userId"`
 	CategoryId  int       `json:"categoryId"`
 	CreatedAt   time.Time `json:"createdAt"`
@@ -41,7 +40,6 @@ func (ctm *CategoryTaskMapped) HandleMappingCategoryWithTask(categoryTask []Cate
 				Id:          eachCategoryTask.Task.Id,
 				Title:       eachCategoryTask.Task.Title,
 				Description: eachCategoryTask.Task.Description,
-				Status:      eachCategoryTask.Task.Status,
 				UserId:      eachCategoryTask.Task.UserId,
 				CategoryId:  eachCategoryTask.Task.CategoryId,
 				CreatedAt:   eachCategoryTask.Task.CreatedAt,
@@ -53,23 +51,4 @@ func (ctm *CategoryTaskMapped) HandleMappingCategoryWithTask(categoryTask []Cate
 	}
 
 	return categoryTasksMapped
-}
-
-func (ctm *CategoryTaskMapped) HandleMappingCategoryWithTaskById(categoryTask CategoryTask) *CategoryTaskMapped {
-	return &CategoryTaskMapped{
-		Id: categoryTask.Category.Id,
-		// Type:      categoryTask.Category.Type,
-		// CreatedAt: categoryTask.Category.CreatedAt,
-		// UpdatedAt: categoryTask.Category.UpdatedAt,
-		// Tasks: Task{
-		// 	Id:          categoryTask.Task.Id,
-		// 	Title:       categoryTask.Task.Title,
-		// 	Description: categoryTask.Task.Description,
-		// 	Status:      categoryTask.Task.Status,
-		// 	UserId:      categoryTask.Task.UserId,
-		// 	CategoryId:  categoryTask.Task.CategoryId,
-		// 	CreatedAt:   categoryTask.Task.CreatedAt,
-		// 	UpdatedAt:   categoryTask.Task.UpdatedAt,
-		// },
-	}
 }

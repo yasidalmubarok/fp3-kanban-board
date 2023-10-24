@@ -48,3 +48,9 @@ type DeleteResponse struct {
 type AdminResponse struct {
 	Message string `json:"message"`
 }
+
+type GetUsers struct {
+	Id       uint       `json:"id"`
+	FullName string    `json:"full_name"`
+	Email    string    `json:"email"`
+}

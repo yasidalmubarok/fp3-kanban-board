@@ -24,7 +24,7 @@ type categoryService struct {
 func NewCategorySevice(categoryRepo category_repo.Repository, taskRepo task_repo.Repository) CategoryService {
 	return &categoryService{
 		categoryRepo: categoryRepo,
-		taskRepo: taskRepo,
+		taskRepo:     taskRepo,
 	}
 }
 

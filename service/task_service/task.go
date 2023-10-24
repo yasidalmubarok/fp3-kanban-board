@@ -13,6 +13,7 @@ import (
 
 type TaskService interface {
 	Create(userId int, taskPayLoad *dto.NewTasksRequest) (*dto.NewTasksResponse, errs.MessageErr)
+	Get() (*dto.GetResponseTasks, errs.MessageErr)
 }
 
 type taskService struct {
@@ -36,7 +37,7 @@ func (ts *taskService) Create(userId int, taskPayLoad *dto.NewTasksRequest) (*dt
 		return nil, err
 	}
 
-	_, err = ts.categoryRepo.ReadById(taskPayLoad.CategoryId)
+	_, err = ts.categoryRepo.CheckCategoryId(taskPayLoad.CategoryId)
 
 	if err != nil {
 		if err.Status() == http.StatusNotFound {
@@ -69,3 +70,24 @@ func (ts *taskService) Create(userId int, taskPayLoad *dto.NewTasksRequest) (*dt
 
 	return response, nil
 }
+
+func (ts *taskService) Get() (*dto.GetResponseTasks, errs.MessageErr) {
+	tasks, err := ts.taskRepo.GetTask()
+
+	if err != nil {
+		if err.Status() == http.StatusNotFound {
+			return nil, err
+		}
+		return nil, err
+	}
+
+	response := dto.GetResponseTasks{
+		StatusCode: http.StatusOK,
+		Message: "successfully fetching task",
+		Data: tasks,
+	}
+
+	return &response, nil
+}
+
+

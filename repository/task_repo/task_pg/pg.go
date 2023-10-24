@@ -21,6 +21,29 @@ const(
 			id, title, description, status, user_id, category_id, created_at;
 	`
 
+	getTaskWithUser = `
+		SELECT
+			t.id,
+			t.title,
+			t.status,
+			t.description,
+			t.user_id,
+			t.category_id,
+			t.created_at,
+			u.id,
+			u.email,
+			u.full_name
+		FROM
+			tasks AS t
+		LEFT JOIN
+			users AS u
+		ON
+			t.user_id = u.id
+		ORDER BY
+			t.id
+		ASC
+	`
+
 	getTaskById = `
 		SELECT 
 			t.id,
@@ -44,10 +67,7 @@ const(
 
 
 )
-// LEFT JOIN
-// 			categories AS c
-// 		ON
-// 			t.category_id = c.id
+
 type taskPG struct {
 	db *sql.DB
 }
@@ -97,6 +117,41 @@ func (t *taskPG) CreateNewTask(taskPayLoad *entity.Task) (*dto.NewTasksResponse,
 	}
 
 	return &task, nil
+}
+
+func (t *taskPG) GetTask() ([]task_repo.TaskUserMapped, errs.MessageErr) {
+	tasksUser := []task_repo.TaskUser{}
+	rows, err := t.db.Query(getTaskWithUser)
+
+	if err != nil {
+		return nil, errs.NewInternalServerError("something went wrong" + err.Error())
+	}
+
+	for rows.Next() {
+		var taskUser task_repo.TaskUser
+
+		err := rows.Scan(
+			&taskUser.Task.Id,
+			&taskUser.Task.Title,
+			&taskUser.Task.Status,
+			&taskUser.Task.Description,
+			&taskUser.Task.UserId,
+			&taskUser.Task.CategoryId,
+			&taskUser.Task.CreatedAt,
+			&taskUser.User.Id,
+			&taskUser.User.Email,
+			&taskUser.User.FullName,
+		)
+
+		if err != nil {
+			return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+		}
+
+		tasksUser = append(tasksUser, taskUser)
+	}
+
+	result := task_repo.TaskUserMapped{}
+	return result.HandleMappingTasksUser(tasksUser), nil
 }
 
 func (t *taskPG) GetTaskById(id int) (*task_repo.TaskUserMapped, errs.MessageErr) {
