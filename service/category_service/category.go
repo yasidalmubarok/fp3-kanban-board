@@ -14,6 +14,7 @@ type CategoryService interface {
 	Create(categoryPayLoad *dto.NewCategoryRequest) (*dto.NewCategoryResponse, errs.MessageErr)
 	Get() (*dto.GetResponse, errs.MessageErr)
 	Update(categoryId int, categoryPayLoad *dto.UpdateRequest) (*dto.UpdateCategoryResponse, errs.MessageErr)
+	Delete(categoryId int) (*dto.DeleteCategoryByIdResponse, errs.MessageErr)
 }
 
 type categoryService struct {
@@ -111,4 +112,27 @@ func (cs *categoryService) Update(categoryId int, categoryPayLoad *dto.UpdateReq
 		Message: "Category has been succesfully updated",
 		Data: response,
 	}, nil
+}
+
+func (cs *categoryService) Delete(categoryId int) (*dto.DeleteCategoryByIdResponse, errs.MessageErr) {
+	category, err := cs.categoryRepo.CheckCategoryId(categoryId)
+
+	if err != nil {
+		if err.Status() == http.StatusNotFound {
+			return nil, errs.NewBadRequest("invalid user")
+		}
+		return nil, err
+	}
+
+	if category.Id != categoryId {
+		return nil, errs.NewNotFoundError("invalid user")
+	}
+
+	cs.categoryRepo.DeleteCategory(categoryId)
+
+	response := &dto.DeleteCategoryByIdResponse{
+		Message: "Category has been successfully deleted",
+	}
+
+	return response, nil
 }
