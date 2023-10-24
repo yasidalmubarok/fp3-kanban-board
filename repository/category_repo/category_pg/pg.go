@@ -64,6 +64,14 @@ const (
 		WHERE
 			c.id = $1
 	`
+
+	deleteCategoryById = `
+		DELETE
+		FROM
+			categories
+		WHERE
+			id = $1
+	`
 )
 
 type categoryPG struct {
@@ -183,4 +191,24 @@ func (c *categoryPG) CheckCategoryId(categoryId int) (*entity.Category, errs.Mes
 	}
 
 	return &category, nil
+}
+
+func (c *categoryPG) DeleteCategory(categoryId int) (errs.MessageErr) {
+	tx, _ := c.db.Begin()
+
+	_, err := tx.Exec(deleteCategoryById, categoryId)
+
+	if err != nil {
+		tx.Rollback()
+		return errs.NewInternalServerError("something went wrong")
+	}
+
+	err = tx.Commit()
+
+	if err != nil {
+		tx.Rollback()
+		return errs.NewInternalServerError("something went wrong")
+	}
+
+	return nil
 }
