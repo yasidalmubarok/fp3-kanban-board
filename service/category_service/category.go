@@ -13,6 +13,7 @@ import (
 type CategoryService interface {
 	Create(categoryPayLoad *dto.NewCategoryRequest) (*dto.NewCategoryResponse, errs.MessageErr)
 	Get() (*dto.GetResponse, errs.MessageErr)
+	Update(categoryId int, categoryPayLoad *dto.UpdateRequest) (*dto.UpdateCategoryResponse, errs.MessageErr)
 }
 
 type categoryService struct {
@@ -72,4 +73,42 @@ func (cs *categoryService) Get() (*dto.GetResponse, errs.MessageErr) {
 	}
 
 	return &response, nil
+}
+
+func (cs *categoryService) Update(categoryId int, categoryPayLoad *dto.UpdateRequest) (*dto.UpdateCategoryResponse, errs.MessageErr) {
+	err := helper.ValidateStruct(categoryPayLoad)
+
+	if err != nil {
+		return nil, err
+	}
+
+	updateCategory, err := cs.categoryRepo.CheckCategoryId(categoryId)
+
+	if err != nil {
+		if err.Status() == http.StatusNotFound {
+			return nil, errs.NewBadRequest("invalid user")
+		}
+		return nil, err
+	}
+
+	if updateCategory.Id != categoryId {
+		return nil, errs.NewNotFoundError("invalid user")
+	}
+
+	category := &entity.Category{
+		Id: categoryId,
+		Type: categoryPayLoad.Type,
+	}
+
+	response, err := cs.categoryRepo.UpdateCategory(category)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.UpdateCategoryResponse{
+		StatusCode: http.StatusOK,
+		Message: "Category has been succesfully updated",
+		Data: response,
+	}, nil
 }

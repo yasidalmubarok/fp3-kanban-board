@@ -55,6 +55,7 @@ func StartApp() {
 	{
 		userRoute.POST("", authService.Authentication(), authService.AdminAuthorization(), categoryHandler.Create)
 		userRoute.GET("", authService.Authentication(), categoryHandler.Get)
+		userRoute.PUT(":categoryId", authService.Authentication(), categoryHandler.Update)
 	}
 
 	userRoute = route.Group("/tasks")

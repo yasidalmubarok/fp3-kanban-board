@@ -39,3 +39,9 @@ type UpdateResponse struct {
 	SoldProductAmount int       `json:"sold_product_amount"`
 	UpdatedAt         time.Time `json:"updated_at"`
 }
+
+type UpdateCategoryResponse struct {
+	StatusCode int    `json:"status_code"`
+	Message    string `json:"message"`
+	Data       any    `json:"data"`
+}
