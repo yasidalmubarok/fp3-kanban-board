@@ -69,3 +69,16 @@ func (ch *categoryHandler) Update(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (ch *categoryHandler) Delete(ctx *gin.Context) {
+	categoryId, _ := strconv.Atoi(ctx.Param("categoryId"))
+
+	response, err := ch.categoryService.Delete(categoryId)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(err.Status(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
