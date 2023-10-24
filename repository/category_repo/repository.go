@@ -8,6 +8,7 @@ import (
 
 type Repository interface {
 	Create(categoryPayLoad *entity.Category) (*dto.NewCategoryResponse, errs.MessageErr)
-	Read() ([]CategoryTaskMapped, errs.MessageErr)
+	GetCategory() ([]CategoryTaskMapped, errs.MessageErr)
+	UpdateCategory(categoryPayLoad *entity.Category) (*dto.UpdateResponse, errs.MessageErr)
 	CheckCategoryId(categoryId int) (*entity.Category, errs.MessageErr)
 }

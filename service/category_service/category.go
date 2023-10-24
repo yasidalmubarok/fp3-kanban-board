@@ -56,7 +56,7 @@ func (cs *categoryService) Create(categoryPayLoad *dto.NewCategoryRequest) (*dto
 }
 
 func (cs *categoryService) Get() (*dto.GetResponse, errs.MessageErr) {
-	categories, err := cs.categoryRepo.Read()
+	categories, err := cs.categoryRepo.GetCategory()
 
 	if err != nil {
 		if err.Status() == http.StatusNotFound {

@@ -27,3 +27,15 @@ type GetResponse struct {
 	Message    string `json:"message"`
 	Data       any    `json:"data"`
 }
+
+// ======= PUT ========
+type UpdateRequest struct {
+	Type string `json:"type" valid:"required~type cannot be empty"`
+}
+
+type UpdateResponse struct {
+	Id                int       `json:"id"`
+	Type              string    `json:"type"`
+	SoldProductAmount int       `json:"sold_product_amount"`
+	UpdatedAt         time.Time `json:"updated_at"`
+}
