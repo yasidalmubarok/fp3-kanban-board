@@ -53,6 +53,9 @@ type UpdateTaskRequest struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 }
+type UpdateTaskRequestByStatus struct {
+	Status bool `json:"status"`
+}
 type UpdateTaskResponse struct {
 	Id          int       `json:"id"`
 	Title       string    `json:"title"`
