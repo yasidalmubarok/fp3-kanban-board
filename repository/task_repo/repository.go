@@ -9,6 +9,6 @@ import (
 type Repository interface {
 	CreateNewTask(taskPayLoad *entity.Task) (*dto.NewTasksResponse, errs.MessageErr)
 	GetTask() ([]TaskUserMapped, errs.MessageErr)
-	GetTaskById(id int) (*TaskUserMapped, errs.MessageErr)
+	GetTaskById(id int) (*entity.Task, errs.MessageErr)
 	UpdateTaskById(taskPayLoad *entity.Task) (*dto.UpdateTaskResponse, errs.MessageErr)
 }

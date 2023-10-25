@@ -46,23 +46,10 @@ const(
 
 	getTaskById = `
 		SELECT 
-			t.id,
-			t.title,
-			t.description,
-			t.status,
-			t.user_id,
-			t.category_id,
-			t.created_at,
-			u.id,
-			u.email,
-			u.full_name
+			id,
 		FROM 
-			tasks AS t
-		LEFT JOIN
-			users AS u
-		ON
-			t.user_id = u.id
-		WHERE t.id = $1
+			tasks
+		WHERE id = $1
 	`
 
 	updateTask = `
@@ -167,21 +154,10 @@ func (t *taskPG) GetTask() ([]task_repo.TaskUserMapped, errs.MessageErr) {
 	return result.HandleMappingTasksUser(tasksUser), nil
 }
 
-func (t *taskPG) GetTaskById(id int) (*task_repo.TaskUserMapped, errs.MessageErr) {
-	var taskUser task_repo.TaskUser
+func (t *taskPG) GetTaskById(id int) (*entity.Task, errs.MessageErr) {
+	var taskUser entity.Task
 	
-	err := t.db.QueryRow(getTaskById, id).Scan(
-		&taskUser.Task.Id,
-		&taskUser.Task.Title,
-		&taskUser.Task.Description,
-		&taskUser.Task.Status,
-		&taskUser.Task.UserId,
-		&taskUser.Task.CategoryId,
-		&taskUser.Task.CreatedAt,
-		&taskUser.User.Id,
-		&taskUser.User.Email,
-		&taskUser.User.FullName,
-	)
+	err := t.db.QueryRow(getTaskById, id).Scan(&taskUser.Id)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -190,8 +166,7 @@ func (t *taskPG) GetTaskById(id int) (*task_repo.TaskUserMapped, errs.MessageErr
 		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
 	}
 
-	result := task_repo.TaskUserMapped{}
-	return result.HandleMappingTaskUser(taskUser), nil
+	return &taskUser, nil
 }
 
 func (t *taskPG) UpdateTaskById(taskPayLoad *entity.Task) (*dto.UpdateTaskResponse, errs.MessageErr) {
