@@ -49,7 +49,8 @@ const (
 		UPDATE
 			categories
 		SET
-			type = $2
+			type = $2,
+			updated_at = now()
 		WHERE
 			id = $1
 		RETURNING

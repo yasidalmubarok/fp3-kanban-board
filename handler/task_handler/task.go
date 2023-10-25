@@ -55,7 +55,7 @@ func (th *taskHandler) Get(ctx *gin.Context) {
 func (th *taskHandler) Update(ctx *gin.Context) {
 	taskId, _:= strconv.Atoi(ctx.Param("taskId"))
 
-	var task dto.UpdateRequest
+	task := &dto.UpdateTaskRequest{}
 
 	if err := ctx.ShouldBindJSON(task); err != nil {
 		errBindJson := errs.NewUnprocessibleEntityError("invalid json body request")
@@ -63,7 +63,7 @@ func (th *taskHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	response, err := th.taskService.UpdateTask(taskId, &task)
+	response, err := th.taskService.UpdateTask(taskId, task)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(err.Status(), err)

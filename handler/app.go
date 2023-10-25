@@ -63,6 +63,7 @@ func StartApp() {
 	{
 		userRoute.POST("", authService.Authentication(), taskHandler.Create)
 		userRoute.GET("", authService.Authentication(), taskHandler.Get)
+		userRoute.PUT(":taskId", authService.Authentication(), taskHandler.Update)
 	}
 
 	route.Run(":" + config.AppConfig().Port)

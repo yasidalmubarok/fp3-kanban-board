@@ -14,7 +14,7 @@ import (
 type TaskService interface {
 	Create(userId int, taskPayLoad *dto.NewTasksRequest) (*dto.NewTasksResponse, errs.MessageErr)
 	Get() (*dto.GetResponseTasks, errs.MessageErr)
-	UpdateTask(taskId int, taskPayLoad *dto.UpdateRequest) (*dto.UpdateResponseTask, errs.MessageErr)
+	UpdateTask(taskId int, taskPayLoad *dto.UpdateTaskRequest) (*dto.UpdateResponseTask, errs.MessageErr)
 }
 
 type taskService struct {
@@ -91,7 +91,7 @@ func (ts *taskService) Get() (*dto.GetResponseTasks, errs.MessageErr) {
 	return &response, nil
 }
 
-func (ts *taskService) UpdateTask(taskId int, taskPayLoad *dto.UpdateRequest) (*dto.UpdateResponseTask, errs.MessageErr) {
+func (ts *taskService) UpdateTask(taskId int, taskPayLoad *dto.UpdateTaskRequest) (*dto.UpdateResponseTask, errs.MessageErr) {
 	err := helper.ValidateStruct(taskPayLoad)
 
 	if err != nil {
@@ -113,8 +113,8 @@ func (ts *taskService) UpdateTask(taskId int, taskPayLoad *dto.UpdateRequest) (*
 
 	task := &entity.Task{
 		Id: taskId,
-		Title: updateTask.Title,
-		Description: updateTask.Description,
+		Title: taskPayLoad.Title,
+		Description: taskPayLoad.Description,
 	}
 
 	response, err := ts.taskRepo.UpdateTaskById(task)
