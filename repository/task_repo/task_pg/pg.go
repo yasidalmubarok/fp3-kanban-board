@@ -65,6 +65,19 @@ const(
 		WHERE t.id = $1
 	`
 
+	updateTask = `
+		UPDATE
+		FROM
+			tasks
+		SET
+			title = $2,
+			description = $3
+		WHERE
+			id = $1
+		RETURNING
+			id, title, description, status, user_id, category_id, updated_at
+	`
+
 
 )
 
@@ -179,4 +192,40 @@ func (t *taskPG) GetTaskById(id int) (*task_repo.TaskUserMapped, errs.MessageErr
 
 	result := task_repo.TaskUserMapped{}
 	return result.HandleMappingTaskUser(taskUser), nil
+}
+
+func (t *taskPG) UpdateTaskById(taskPayLoad *entity.Task) (*dto.UpdateTaskResponse, errs.MessageErr) {
+	tx, err := t.db.Begin()
+
+	if err != nil {
+		tx.Rollback()
+		return nil, errs.NewInternalServerError("something went wrong" + err.Error())
+	}
+
+	row := tx.QueryRow(updateTask, taskPayLoad.Id, taskPayLoad.Title, taskPayLoad.Description)
+	
+	var taskUpdate dto.UpdateTaskResponse
+	err = row.Scan(
+		&taskUpdate.Id,
+		&taskUpdate.Title,
+		&taskUpdate.Description,
+		&taskUpdate.Status,
+		&taskUpdate.UserId,
+		&taskUpdate.CategoryId,
+		&taskUpdate.UpdatedAt,
+	)
+
+	if err != nil {
+		tx.Rollback()
+		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+	}
+
+	err = tx.Commit()
+
+	if err != nil {
+		tx.Rollback()
+		return nil, errs.NewInternalServerError("something went wrong "+ err.Error())
+	}
+
+	return &taskUpdate, nil
 }
