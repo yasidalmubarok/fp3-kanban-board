@@ -6,6 +6,7 @@ import (
 	"final-project/pkg/errs"
 	"final-project/service/task_service"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,4 +50,25 @@ func (th *taskHandler) Get(ctx *gin.Context) {
 	}
 
 	ctx.JSON(response.StatusCode, response)
+}
+
+func (th *taskHandler) Update(ctx *gin.Context) {
+	taskId, _:= strconv.Atoi(ctx.Param("taskId"))
+
+	var task dto.UpdateRequest
+
+	if err := ctx.ShouldBindJSON(task); err != nil {
+		errBindJson := errs.NewUnprocessibleEntityError("invalid json body request")
+		ctx.AbortWithStatusJSON(errBindJson.Status(), errBindJson)
+		return
+	}
+
+	response, err := th.taskService.UpdateTask(taskId, &task)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(err.Status(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
