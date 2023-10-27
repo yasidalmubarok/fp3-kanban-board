@@ -93,3 +93,24 @@ func (th *taskHandler) UpdateByStatus(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (th *taskHandler) UpdateByCategoryId(ctx *gin.Context) {
+	taskId, _:= strconv.Atoi(ctx.Param("taskId"))
+
+	task := &dto.UpdateCategoryIdRequest{}
+
+	if err := ctx.ShouldBindJSON(task); err != nil {
+		errBindJson := errs.NewUnprocessibleEntityError("invalid json body request")
+		ctx.AbortWithStatusJSON(errBindJson.Status(), errBindJson)
+		return
+	}
+
+	response, err := th.taskService.UpdateTaskByCategoryId(taskId, task)
+	
+	if err != nil {
+		ctx.AbortWithStatusJSON(err.Status(), err)
+		return
+	}
+
+	ctx.JSON(response.StatusCode, response)
+}
