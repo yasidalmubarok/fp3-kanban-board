@@ -24,45 +24,39 @@ type TaskUserMapped struct {
 	UserId      int       `json:"userId"`
 	CategoryId  int       `json:"categoryId"`
 	CreatedAt   time.Time `json:"createdAt"`
-	User        user      `json:"user"`
+	Users        []user    `json:"user"`
 }
 
 func (tum *TaskUserMapped) HandleMappingTasksUser(taskUser []TaskUser) []TaskUserMapped {
-	tasksUserMapped := []TaskUserMapped{}
+	tasksUserMapped := make(map[int]TaskUserMapped)
 
 	for _, eachTaskUser := range taskUser {
-		taskUserMapped := TaskUserMapped{
-			Id:          eachTaskUser.Task.Id,
-			Title:       eachTaskUser.Task.Title,
-			Description: eachTaskUser.Task.Description,
-			Status:      eachTaskUser.Task.Status,
-			UserId:      eachTaskUser.Task.UserId,
-			CategoryId:  eachTaskUser.Task.CategoryId,
-			CreatedAt:   eachTaskUser.Task.CreatedAt,
-			User: user{
-				Id:       eachTaskUser.User.Id,
-				Email:    eachTaskUser.User.Email,
-				FullName: eachTaskUser.User.FullName,
-			},
+		taskId := eachTaskUser.Task.Id
+		taskUserMapped, exists := tasksUserMapped[taskId]
+		if !exists {
+			taskUserMapped = TaskUserMapped{
+				Id:          eachTaskUser.Task.Id,
+				Title:       eachTaskUser.Task.Title,
+				Description: eachTaskUser.Task.Description,
+				Status:      eachTaskUser.Task.Status,
+				UserId:      eachTaskUser.Task.UserId,
+				CategoryId:  eachTaskUser.Task.CategoryId,
+				CreatedAt:   eachTaskUser.Task.CreatedAt,
+			}
 		}
-		tasksUserMapped = append(tasksUserMapped, taskUserMapped)
+		user := user{
+			Id:       eachTaskUser.User.Id,
+			Email:    eachTaskUser.User.Email,
+			FullName: eachTaskUser.User.FullName,
+		}
+		taskUserMapped.Users = append(taskUserMapped.Users, user)
+		tasksUserMapped[taskId] = taskUserMapped
 	}
-	return tasksUserMapped
+
+	taskUsers := []TaskUserMapped{}
+	for _, taskUser := range tasksUserMapped {
+		taskUsers = append(taskUsers, taskUser)
+	}
+	return taskUsers
 }
 
-func (tum *TaskUserMapped) HandleMappingTaskUser(taskUser TaskUser) *TaskUserMapped {
-	return &TaskUserMapped{
-		Id:          taskUser.Task.Id,
-		Title:       taskUser.Task.Title,
-		Description: taskUser.Task.Description,
-		Status:      taskUser.Task.Status,
-		UserId:      taskUser.Task.UserId,
-		CategoryId:  taskUser.Task.CategoryId,
-		CreatedAt:   taskUser.Task.CreatedAt,
-		User: user{
-			Id:       taskUser.User.Id,
-			Email:    taskUser.User.Email,
-			FullName: taskUser.User.FullName,
-		},
-	}
-}

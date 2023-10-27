@@ -29,13 +29,13 @@ type CategoryTaskMapped struct {
 }
 
 func (ctm *CategoryTaskMapped) HandleMappingCategoryWithTask(categoryTask []CategoryTask) []CategoryTaskMapped {
-	categoryTasksMap := make(map[int]CategoryTaskMapped)
+	categoryTasksMapped := make(map[int]CategoryTaskMapped)
 
 	for _, eachCategoryTask := range categoryTask {
 		categoryId := eachCategoryTask.Category.Id
-		categoryTaskMap, exists := categoryTasksMap[categoryId]
+		categoryTaskMapped, exists := categoryTasksMapped[categoryId]
 		if !exists {
-			categoryTaskMap = CategoryTaskMapped{
+			categoryTaskMapped = CategoryTaskMapped{
 				Id:        eachCategoryTask.Category.Id,
 				Type:      eachCategoryTask.Category.Type,
 				CreatedAt: eachCategoryTask.Category.CreatedAt,
@@ -43,7 +43,7 @@ func (ctm *CategoryTaskMapped) HandleMappingCategoryWithTask(categoryTask []Cate
 			}
 		}
 
-		taskItem := task{
+		task := task{
 			Id:          eachCategoryTask.Task.Id,
 			Title:       eachCategoryTask.Task.Title,
 			Description: eachCategoryTask.Task.Description,
@@ -52,12 +52,12 @@ func (ctm *CategoryTaskMapped) HandleMappingCategoryWithTask(categoryTask []Cate
 			CreatedAt:   eachCategoryTask.Task.CreatedAt,
 			UpdatedAt:   eachCategoryTask.Task.UpdatedAt,
 		}
-		categoryTaskMap.Tasks = append(categoryTaskMap.Tasks, taskItem)
-		categoryTasksMap[categoryId] = categoryTaskMap
+		categoryTaskMapped.Tasks = append(categoryTaskMapped.Tasks, task)
+		categoryTasksMapped[categoryId] = categoryTaskMapped
 	}
 
 	categoryTasks := []CategoryTaskMapped{}
-	for _, categoryTask := range categoryTasksMap {
+	for _, categoryTask := range categoryTasksMapped {
 		categoryTasks = append(categoryTasks, categoryTask)
 	}
 
