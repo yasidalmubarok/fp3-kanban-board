@@ -86,8 +86,8 @@ func (ts *taskService) Get() (*dto.GetResponseTasks, errs.MessageErr) {
 
 	response := dto.GetResponseTasks{
 		StatusCode: http.StatusOK,
-		Message: "successfully fetching task",
-		Data: tasks,
+		Message:    "successfully fetching task",
+		Data:       tasks,
 	}
 
 	return &response, nil
@@ -114,8 +114,8 @@ func (ts *taskService) UpdateTask(taskId int, taskPayLoad *dto.UpdateTaskRequest
 	}
 
 	task := &entity.Task{
-		Id: taskId,
-		Title: taskPayLoad.Title,
+		Id:          taskId,
+		Title:       taskPayLoad.Title,
 		Description: taskPayLoad.Description,
 	}
 
@@ -127,8 +127,8 @@ func (ts *taskService) UpdateTask(taskId int, taskPayLoad *dto.UpdateTaskRequest
 
 	return &dto.UpdateResponseTask{
 		StatusCode: http.StatusOK,
-		Message: "Task has been successfully updated",
-		Data: response,
+		Message:    "Task has been successfully updated",
+		Data:       response,
 	}, nil
 }
 
@@ -153,7 +153,7 @@ func (ts *taskService) UpdateTaskByStatus(taskId int, taskPayLoad *dto.UpdateTas
 	}
 
 	task := &entity.Task{
-		Id: taskId,
+		Id:     taskId,
 		Status: taskPayLoad.Status,
 	}
 
@@ -165,8 +165,8 @@ func (ts *taskService) UpdateTaskByStatus(taskId int, taskPayLoad *dto.UpdateTas
 
 	return &dto.UpdateResponseTask{
 		StatusCode: http.StatusOK,
-		Message: "Status has been successfully updated",
-		Data: response,
+		Message:    "Status has been successfully updated",
+		Data:       response,
 	}, nil
 }
 
@@ -190,8 +190,17 @@ func (ts *taskService) UpdateTaskByCategoryId(taskId int, taskPayLoad *dto.Updat
 		return nil, errs.NewNotFoundError("invalid user")
 	}
 
+	_, err = ts.categoryRepo.CheckCategoryId(taskPayLoad.CategoryId)
+
+	if err != nil {
+		if err.Status() == http.StatusNotFound {
+			return nil, errs.NewBadRequest("invalid user")
+		}
+		return nil, err
+	}
+
 	task := &entity.Task{
-		Id: taskId,
+		Id:         taskId,
 		CategoryId: taskPayLoad.CategoryId,
 	}
 
@@ -203,7 +212,7 @@ func (ts *taskService) UpdateTaskByCategoryId(taskId int, taskPayLoad *dto.Updat
 
 	return &dto.UpdateCategoryId{
 		StatusCode: http.StatusOK,
-		Message: "Category id has been successfully updated",
-		Data: response,
+		Message:    "Category id has been successfully updated",
+		Data:       response,
 	}, nil
 }
