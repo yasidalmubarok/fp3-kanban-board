@@ -70,7 +70,7 @@ func (th *taskHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(response.StatusCode, response)
 }
 
 func (th *taskHandler) UpdateByStatus(ctx *gin.Context) {
