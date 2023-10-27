@@ -91,7 +91,7 @@ func (th *taskHandler) UpdateByStatus(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(response.StatusCode, response)
 }
 
 func (th *taskHandler) UpdateByCategoryId(ctx *gin.Context) {
