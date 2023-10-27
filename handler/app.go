@@ -55,15 +55,16 @@ func StartApp() {
 	{
 		userRoute.POST("", authService.Authentication(), authService.AdminAuthorization(), categoryHandler.Create)
 		userRoute.GET("", authService.Authentication(), categoryHandler.Get)
-		userRoute.PATCH(":categoryId", authService.Authentication(), categoryHandler.Update)
-		userRoute.DELETE(":categoryId", authService.Authentication(), categoryHandler.Delete)
+		userRoute.PATCH("/:categoryId", authService.Authentication(), categoryHandler.Update)
+		userRoute.DELETE("/:categoryId", authService.Authentication(), categoryHandler.Delete)
 	}
 
 	userRoute = route.Group("/tasks")
 	{
 		userRoute.POST("", authService.Authentication(), taskHandler.Create)
 		userRoute.GET("", authService.Authentication(), taskHandler.Get)
-		userRoute.PUT(":taskId", authService.Authentication(), taskHandler.Update)
+		userRoute.PUT("/:taskId", authService.Authentication(), authService.TaskAuthorization(), taskHandler.Update)
+		userRoute.PATCH("/update-status/:taskId", authService.Authentication(), authService.TaskAuthorization(), taskHandler.UpdateByStatus)
 	}
 
 	route.Run(":" + config.AppConfig().Port)

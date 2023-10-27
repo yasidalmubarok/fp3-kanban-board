@@ -46,9 +46,10 @@ const(
 
 	getTaskById = `
 		SELECT 
-			t.id
+			t.id,
+			t.user_id
 		FROM 
-			tasks AS t
+			tasks
 		WHERE 
 			t.id = $1
 	`
@@ -71,6 +72,17 @@ const(
 			tasks
 		SET
 			status = $2,
+			updated_at = now()
+		WHERE
+			id = $1
+		RETURNING
+			id, title, description, status, user_id, category_id, updated_at
+	`
+	updateTaskByCategoryId = `
+		UPDATE
+			tasks
+		SET
+			category_id = $2,
 			updated_at = now()
 		WHERE
 			id = $1
@@ -170,7 +182,7 @@ func (t *taskPG) GetTask() ([]task_repo.TaskUserMapped, errs.MessageErr) {
 func (t *taskPG) GetTaskById(id int) (*entity.Task, errs.MessageErr) {
 	var taskUser entity.Task
 	
-	err := t.db.QueryRow(getTaskById, id).Scan(&taskUser.Id)
+	err := t.db.QueryRow(getTaskById, id).Scan(&taskUser.Id, &taskUser.UserId)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -218,7 +230,7 @@ func (t *taskPG) UpdateTaskById(taskPayLoad *entity.Task) (*dto.UpdateTaskRespon
 	return &taskUpdate, nil
 }
 
-func (t *taskPG) UpdateTaskByStatus(taskPayLoad *entity.Task) (*dto.UpdateTaskResponse, errs.MessageErr) {
+func (t *taskPG) UpdateTaskByStatus(taskPayLoad *entity.Task) (*dto.UpdateTaskResponseByStatus, errs.MessageErr) {
 	tx, err := t.db.Begin()
 
 	if err != nil {
@@ -226,9 +238,9 @@ func (t *taskPG) UpdateTaskByStatus(taskPayLoad *entity.Task) (*dto.UpdateTaskRe
 		return nil, errs.NewInternalServerError("something went wrong" + err.Error())
 	}
 
-	row := tx.QueryRow(updateTaskById, taskPayLoad.Id, taskPayLoad.Status)
+	row := tx.QueryRow(updateTaskByStatus, taskPayLoad.Id, taskPayLoad.Status)
 	
-	var taskUpdate dto.UpdateTaskResponse
+	var taskUpdate dto.UpdateTaskResponseByStatus
 	err = row.Scan(
 		&taskUpdate.Id,
 		&taskUpdate.Title,
@@ -249,6 +261,39 @@ func (t *taskPG) UpdateTaskByStatus(taskPayLoad *entity.Task) (*dto.UpdateTaskRe
 	if err != nil {
 		tx.Rollback()
 		return nil, errs.NewInternalServerError("something went wrong "+ err.Error())
+	}
+
+	return &taskUpdate, nil
+}
+
+func (t *taskPG) UpdateTaskByCategoryId(taskPayLoad *entity.Task) (*dto.UpdateCategoryIdResponse, errs.MessageErr) {
+	tx, err := t.db.Begin()
+
+	if err != nil {
+		tx.Rollback()
+		return nil, errs.NewInternalServerError("something went wrong")
+	}
+	var taskUpdate dto.UpdateCategoryIdResponse
+	err = tx.QueryRow(updateTaskByCategoryId, taskPayLoad.Id).Scan(
+		&taskUpdate.Id,
+		&taskUpdate.Title,
+		&taskUpdate.Description,
+		&taskUpdate.Status,
+		&taskUpdate.UserId,
+		&taskUpdate.CategoryId,
+		&taskUpdate.UpdatedAt,
+	)
+
+	if err != nil {
+		tx.Rollback()
+		return nil, errs.NewInternalServerError("something went wrong")
+	}
+
+	err = tx.Commit()
+
+	if err != nil {
+		tx.Rollback()
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	return &taskUpdate, nil

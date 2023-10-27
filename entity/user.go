@@ -15,7 +15,7 @@ type User struct {
 	FullName  string    `json:"full_name"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
-	Role      string    `json:"role" binding:"required,oneof= member admin"`
+	Role      string    `json:"role" binding:"required,oneof= member"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
@@ -89,6 +89,18 @@ func (u *User) bindTokenToUserEntity(claim jwt.MapClaims) errs.MessageErr {
 		return invalidTokenErr
 	} else {
 		u.Id = int(id)
+	}
+
+	if fullName, ok := claim["full_name"].(string); !ok {
+		return invalidTokenErr
+	} else {
+		u.FullName = fullName
+	}
+
+	if role, ok := claim["role"].(string); !ok {
+		return invalidTokenErr
+	} else {
+		u.Role = role
 	}
 
 	return nil

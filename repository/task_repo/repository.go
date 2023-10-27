@@ -11,5 +11,6 @@ type Repository interface {
 	GetTask() ([]TaskUserMapped, errs.MessageErr)
 	GetTaskById(id int) (*entity.Task, errs.MessageErr)
 	UpdateTaskById(taskPayLoad *entity.Task) (*dto.UpdateTaskResponse, errs.MessageErr)
-	UpdateTaskByStatus(taskPayLoad *entity.Task) (*dto.UpdateTaskResponse, errs.MessageErr)
+	UpdateTaskByStatus(taskPayLoad *entity.Task) (*dto.UpdateTaskResponseByStatus, errs.MessageErr)
+	UpdateTaskByCategoryId(taskPayLoad *entity.Task) (*dto.UpdateCategoryIdResponse, errs.MessageErr)
 }

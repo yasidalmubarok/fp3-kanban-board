@@ -16,6 +16,7 @@ type TaskService interface {
 	Get() (*dto.GetResponseTasks, errs.MessageErr)
 	UpdateTask(taskId int, taskPayLoad *dto.UpdateTaskRequest) (*dto.UpdateResponseTask, errs.MessageErr)
 	UpdateTaskByStatus(taskId int, taskPayLoad *dto.UpdateTaskRequestByStatus) (*dto.UpdateResponseTask, errs.MessageErr)
+	UpdateTaskByCategoryId(taskId int, taskPayLoad *dto.UpdateCategoryIdRequest) (*dto.UpdateCategoryId, errs.MessageErr)
 }
 
 type taskService struct {
@@ -169,4 +170,40 @@ func (ts *taskService) UpdateTaskByStatus(taskId int, taskPayLoad *dto.UpdateTas
 	}, nil
 }
 
+func (ts *taskService) UpdateTaskByCategoryId(taskId int, taskPayLoad *dto.UpdateCategoryIdRequest) (*dto.UpdateCategoryId, errs.MessageErr) {
+	err := helper.ValidateStruct(taskPayLoad)
 
+	if err != nil {
+		return nil, err
+	}
+
+	updateTask, err := ts.taskRepo.GetTaskById(taskId)
+
+	if err != nil {
+		if err.Status() == http.StatusNotFound {
+			return nil, errs.NewBadRequest("invalid user")
+		}
+		return nil, err
+	}
+
+	if updateTask.Id != taskId {
+		return nil, errs.NewNotFoundError("invalid user")
+	}
+
+	task := &entity.Task{
+		Id: taskId,
+		CategoryId: taskPayLoad.CategoryId,
+	}
+
+	response, err := ts.taskRepo.UpdateTaskByCategoryId(task)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.UpdateCategoryId{
+		StatusCode: http.StatusOK,
+		Message: "Category id has been successfully updated",
+		Data: response,
+	}, nil
+}
