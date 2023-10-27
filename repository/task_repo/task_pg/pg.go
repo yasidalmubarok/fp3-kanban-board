@@ -49,7 +49,7 @@ const(
 			t.id,
 			t.user_id
 		FROM 
-			tasks
+			tasks AS t
 		WHERE 
 			t.id = $1
 	`
@@ -274,7 +274,7 @@ func (t *taskPG) UpdateTaskByCategoryId(taskPayLoad *entity.Task) (*dto.UpdateCa
 		return nil, errs.NewInternalServerError("something went wrong")
 	}
 	var taskUpdate dto.UpdateCategoryIdResponse
-	err = tx.QueryRow(updateTaskByCategoryId, taskPayLoad.Id).Scan(
+	err = tx.QueryRow(updateTaskByCategoryId, taskPayLoad.Id, taskPayLoad.CategoryId).Scan(
 		&taskUpdate.Id,
 		&taskUpdate.Title,
 		&taskUpdate.Description,
@@ -286,7 +286,7 @@ func (t *taskPG) UpdateTaskByCategoryId(taskPayLoad *entity.Task) (*dto.UpdateCa
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong")
+		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
 	}
 
 	err = tx.Commit()
