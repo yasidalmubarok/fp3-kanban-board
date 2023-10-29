@@ -66,6 +66,7 @@ func StartApp() {
 		userRoute.PUT("/:taskId", authService.Authentication(), authService.TaskAuthorization(), taskHandler.Update)
 		userRoute.PATCH("/update-status/:taskId", authService.Authentication(), authService.TaskAuthorization(), taskHandler.UpdateByStatus)
 		userRoute.PATCH("/update-category/:taskId", authService.Authentication(), authService.TaskAuthorization(), taskHandler.UpdateByCategoryId)
+		userRoute.DELETE("/:taskId", authService.Authentication(), authService.TaskAuthorization(), taskHandler.Delete)
 	}
 
 	route.Run(":" + config.AppConfig().Port)

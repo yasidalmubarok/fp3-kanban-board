@@ -6,7 +6,6 @@ import (
 	"final-project/repository/category_repo"
 	"final-project/repository/task_repo"
 	"final-project/repository/user_repo"
-	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -69,12 +68,10 @@ func (a *authService) AdminAuthorization() gin.HandlerFunc {
 			return
 		}
 		if userData.Role != "admin" {
-			fmt.Println("userData: ", userData)
 			newError := errs.NewUnauthorizedError("You're not authorized to access this endpoint")
 			ctx.AbortWithStatusJSON(newError.Status(), newError)
 			return
 		}
-		
 
 		ctx.Next()
 	}
@@ -90,7 +87,6 @@ func (a *authService) TaskAuthorization() gin.HandlerFunc {
 		}
 
 		taskId, _ := strconv.Atoi(ctx.Param("taskId"))
-		fmt.Println("taskId: ", taskId)
 
 		task, err := a.taskRepo.GetTaskById(taskId)
 		if err != nil {
@@ -101,8 +97,6 @@ func (a *authService) TaskAuthorization() gin.HandlerFunc {
 		if task.UserId != userData.Id {
 			newError := errs.NewUnauthorizedError("You're not authorized to modify this task")
 			ctx.AbortWithStatusJSON(newError.Status(), newError)
-			fmt.Println("task user id: ", task.UserId)
-			fmt.Println("user data id: ", userData.Id)
 			return
 		}
 

@@ -114,3 +114,16 @@ func (th *taskHandler) UpdateByCategoryId(ctx *gin.Context) {
 
 	ctx.JSON(response.StatusCode, response)
 }
+
+func (th *taskHandler) Delete(ctx *gin.Context) {
+	taskId, _ := strconv.Atoi(ctx.Param("taskId"))
+
+	response, err := th.taskService.DeleteTaskById(taskId)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(err.Status(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
