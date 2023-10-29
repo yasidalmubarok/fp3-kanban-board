@@ -24,7 +24,7 @@ type TaskUserMapped struct {
 	UserId      int       `json:"userId"`
 	CategoryId  int       `json:"categoryId"`
 	CreatedAt   time.Time `json:"createdAt"`
-	Users        []user    `json:"user"`
+	Users       []user    `json:"user"`
 }
 
 func (tum *TaskUserMapped) HandleMappingTasksUser(taskUser []TaskUser) []TaskUserMapped {
@@ -44,6 +44,7 @@ func (tum *TaskUserMapped) HandleMappingTasksUser(taskUser []TaskUser) []TaskUse
 				CreatedAt:   eachTaskUser.Task.CreatedAt,
 			}
 		}
+
 		user := user{
 			Id:       eachTaskUser.User.Id,
 			Email:    eachTaskUser.User.Email,
@@ -59,4 +60,3 @@ func (tum *TaskUserMapped) HandleMappingTasksUser(taskUser []TaskUser) []TaskUse
 	}
 	return taskUsers
 }
-

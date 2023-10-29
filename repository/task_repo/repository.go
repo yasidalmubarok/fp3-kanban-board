@@ -13,4 +13,5 @@ type Repository interface {
 	UpdateTaskById(taskPayLoad *entity.Task) (*dto.UpdateTaskResponse, errs.MessageErr)
 	UpdateTaskByStatus(taskPayLoad *entity.Task) (*dto.UpdateTaskResponseByStatus, errs.MessageErr)
 	UpdateTaskByCategoryId(taskPayLoad *entity.Task) (*dto.UpdateCategoryIdResponse, errs.MessageErr)
+	DeleteTaskById(taskId int) (errs.MessageErr)
 }

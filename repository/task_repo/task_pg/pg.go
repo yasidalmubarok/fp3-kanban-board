@@ -90,6 +90,14 @@ const(
 			id, title, description, status, user_id, category_id, updated_at
 	`
 
+	deleteTaskById = `
+		DELETE
+		FROM
+			tasks
+		WHERE
+			id = $1
+	`
+
 
 )
 
@@ -297,4 +305,29 @@ func (t *taskPG) UpdateTaskByCategoryId(taskPayLoad *entity.Task) (*dto.UpdateCa
 	}
 
 	return &taskUpdate, nil
+}
+
+func (t *taskPG) DeleteTaskById(taskId int) (errs.MessageErr) {
+	tx, err := t.db.Begin()
+
+	if err != nil {
+		tx.Rollback()
+		return errs.NewInternalServerError("something went wrong")
+	}
+
+	_, err = tx.Exec(deleteTaskById, taskId)
+
+	if err != nil {
+		tx.Rollback()
+		return errs.NewInternalServerError("something went wrong")
+	}
+
+	err = tx.Commit()
+
+	if err != nil {
+		tx.Rollback()
+		return errs.NewInternalServerError("something went wrong")
+	}
+
+	return nil
 }

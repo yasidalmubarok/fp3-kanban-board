@@ -17,6 +17,7 @@ type TaskService interface {
 	UpdateTask(taskId int, taskPayLoad *dto.UpdateTaskRequest) (*dto.UpdateResponseTask, errs.MessageErr)
 	UpdateTaskByStatus(taskId int, taskPayLoad *dto.UpdateTaskRequestByStatus) (*dto.UpdateResponseTask, errs.MessageErr)
 	UpdateTaskByCategoryId(taskId int, taskPayLoad *dto.UpdateCategoryIdRequest) (*dto.UpdateCategoryId, errs.MessageErr)
+	DeleteTaskById(taskId int) (*dto.DeleteTaskByIdResponse, errs.MessageErr)
 }
 
 type taskService struct {
@@ -215,4 +216,27 @@ func (ts *taskService) UpdateTaskByCategoryId(taskId int, taskPayLoad *dto.Updat
 		Message:    "Category id has been successfully updated",
 		Data:       response,
 	}, nil
+}
+
+func (ts *taskService) DeleteTaskById(taskId int) (*dto.DeleteTaskByIdResponse, errs.MessageErr) {
+	task, err := ts.taskRepo.GetTaskById(taskId)
+
+	if err != nil {
+		if err.Status() == http.StatusNotFound {
+			return nil, errs.NewBadRequest("invalid user")
+		}
+		return nil, err
+	}
+
+	if task.Id != taskId {
+		return nil, errs.NewNotFoundError("invalid user")
+	}
+
+	ts.taskRepo.DeleteTaskById(taskId)
+
+	response := &dto.DeleteTaskByIdResponse{
+		Message: "Task has been successfully deleted",
+	}
+
+	return response, nil
 }
