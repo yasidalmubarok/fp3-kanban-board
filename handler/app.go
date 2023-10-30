@@ -59,8 +59,7 @@ func StartApp() {
 	docs.SwaggerInfo.Title = "KanbanBoard"
 	docs.SwaggerInfo.Description = "Final-Project-3-Hacktiv8"
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:8080"
-	docs.SwaggerInfo.Schemes = []string{"http"}
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggoFile.Handler))
 
