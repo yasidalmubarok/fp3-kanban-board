@@ -28,7 +28,7 @@ import (
 // @contact.name GLNG-KS07 - Group 5
 // @contact.url https://github.com/yasidalmubarok/group-5-final-project-kanban-board
 
-// @host localhost:8080
+// @host fp3-kanban-board-production.up.railway.app
 // @BasePath /
 
 func StartApp() {

@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   dto.DeleteCategoryByIdResponse:
     properties:
@@ -166,8 +167,14 @@ definitions:
       updatedAt:
         type: string
     type: object
+host: fp3-kanban-board-production.up.railway.app
 info:
-  contact: {}
+  contact:
+    name: GLNG-KS07 - Group 5
+    url: https://github.com/yasidalmubarok/group-5-final-project-kanban-board
+  description: Final Project 3 Kampus Merdeka
+  title: Kanban Board
+  version: "1.0"
 paths:
   /categories:
     get:
