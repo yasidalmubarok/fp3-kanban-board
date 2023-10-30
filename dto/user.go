@@ -6,7 +6,6 @@ type NewUserRequest struct {
 	FullName string `json:"full_name" valid:"required~full_name cannot be empty"`
 	Email    string `json:"email" valid:"required~email cannot be empty"`
 	Password string `json:"password" valid:"required~password cannot be empty, length(6|255)~Minimum password is 6 length"`
-	Role     string `json:"role" valid:"required~role cannot be empty"`
 }
 
 type NewUserResponse struct {

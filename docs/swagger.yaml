@@ -1,0 +1,536 @@
+definitions:
+  dto.DeleteCategoryByIdResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.DeleteResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.DeleteTaskByIdResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.GetResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+  dto.GetResponseTasks:
+    properties:
+      data: {}
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+  dto.NewCategoryRequest:
+    properties:
+      type:
+        type: string
+    type: object
+  dto.NewCategoryResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      type:
+        type: string
+    type: object
+  dto.NewTasksRequest:
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.NewTasksResponse:
+    properties:
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: boolean
+      title:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.NewUserRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.NewUserResponse:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+    type: object
+  dto.UpdateCategoryId:
+    properties:
+      data: {}
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+  dto.UpdateCategoryIdRequest:
+    properties:
+      category_id:
+        type: integer
+    type: object
+  dto.UpdateCategoryResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+  dto.UpdateRequest:
+    properties:
+      type:
+        type: string
+    type: object
+  dto.UpdateResponseTask:
+    properties:
+      data: {}
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+  dto.UpdateTaskRequest:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.UpdateTaskRequestByStatus:
+    properties:
+      status:
+        type: boolean
+    type: object
+  dto.UserLoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.UserLoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  dto.UserUpdateRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+    type: object
+  dto.UserUpdateResponse:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Get Categories
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetResponse'
+      summary: Get Tasks
+      tags:
+      - Category
+    post:
+      consumes:
+      - application/json
+      description: Create new Category
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: body request for add new Task
+        in: body
+        name: RequestBody
+        required: true
+        schema:
+          $ref: '#/definitions/dto.NewCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.NewCategoryResponse'
+      summary: Create new Category
+      tags:
+      - Category
+  /categories/{categoryId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Category
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: categoryId
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeleteCategoryByIdResponse'
+      summary: Delete Category
+      tags:
+      - Category
+    patch:
+      consumes:
+      - application/json
+      description: Update Category
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: categoryId
+        in: path
+        name: categoryId
+        required: true
+        type: integer
+      - description: body request for update task
+        in: body
+        name: RequestBody
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateCategoryResponse'
+      summary: Update Category
+      tags:
+      - Category
+  /tasks:
+    get:
+      consumes:
+      - application/json
+      description: Get Tasks
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetResponseTasks'
+      summary: Get Tasks
+      tags:
+      - Task
+    post:
+      consumes:
+      - application/json
+      description: Create new Task
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: body request for add new Task
+        in: body
+        name: RequestBody
+        required: true
+        schema:
+          $ref: '#/definitions/dto.NewTasksRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.NewTasksResponse'
+      summary: Create new Task
+      tags:
+      - Task
+  /tasks/{taskId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: taskId
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeleteTaskByIdResponse'
+      summary: Delete
+      tags:
+      - Task
+    put:
+      consumes:
+      - application/json
+      description: Update task
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: taskId
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      - description: body request for update task
+        in: body
+        name: RequestBody
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateResponseTask'
+      summary: Update task
+      tags:
+      - Task
+  /tasks/update-category/{taskId}:
+    patch:
+      consumes:
+      - application/json
+      description: Update task by categoryId
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: taskId
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      - description: body request for update task by status
+        in: body
+        name: RequestBody
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCategoryIdRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateCategoryId'
+      summary: Update task by categoryId
+      tags:
+      - Task
+  /tasks/update-status/{taskId}:
+    patch:
+      consumes:
+      - application/json
+      description: Update task by status
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: taskId
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      - description: body request for update task by status
+        in: body
+        name: RequestBody
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateTaskRequestByStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateResponseTask'
+      summary: Update task by status
+      tags:
+      - Task
+  /users/delete-account:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Users
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeleteResponse'
+      summary: Delete User
+      tags:
+      - Users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: User login
+      parameters:
+      - description: body request for user login
+        in: body
+        name: RequestBody
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserLoginResponse'
+      summary: User login
+      tags:
+      - Users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: User register
+      parameters:
+      - description: body request for user register
+        in: body
+        name: RequestBody
+        required: true
+        schema:
+          $ref: '#/definitions/dto.NewUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.NewUserResponse'
+      summary: User register
+      tags:
+      - Users
+  /users/update-account:
+    put:
+      consumes:
+      - application/json
+      description: User Update
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: body request for user login
+        in: body
+        name: RequestBody
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserUpdateResponse'
+      summary: User Update
+      tags:
+      - Users
+swagger: "2.0"

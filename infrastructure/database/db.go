@@ -50,7 +50,7 @@ func handleCreateRequiredTables() {
 				full_name VARCHAR(255) NOT NULL,
 				email VARCHAR(255) NOT NULL,
 				password TEXT NOT NULL,
-				role TEXT NOT NULL,
+				role TEXT NOT NULL DEFAULT 'member',
 				created_at timestamptz DEFAULT now(),
 				updated_at timestamptz DEFAULT now(),
 				CONSTRAINT 

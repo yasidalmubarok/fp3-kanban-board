@@ -20,6 +20,17 @@ func NewCategoryHandler(categoryService category_service.CategoryService) *categ
 	}
 }
 
+// Create implements CategoriesHandler.
+// Create godoc
+// @Summary Create new Category
+// @Description Create new Category
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer Token"
+// @Param RequestBody body dto.NewCategoryRequest true "body request for add new Task"
+// @Success 201 {object} dto.NewCategoryResponse
+// @Router /categories [post]
 func (ch *categoryHandler) Create(ctx *gin.Context) {
 	var newCategoryRequest = &dto.NewCategoryRequest{}
 
@@ -39,6 +50,16 @@ func (ch *categoryHandler) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, response)
 }
 
+// Get implements CategoriesHandler.
+// Get godoc
+// @Summary Get Tasks
+// @Description Get Categories
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer Token"
+// @Success 200 {object} dto.GetResponse
+// @Router /categories [get]
 func (ch *categoryHandler) Get(ctx *gin.Context) {
 	response, err := ch.categoryService.Get()
 
@@ -49,6 +70,18 @@ func (ch *categoryHandler) Get(ctx *gin.Context) {
 	ctx.JSON(response.StatusCode, response)
 }
 
+// Update implements CategoriesHandler.
+// Update godoc
+// @Summary Update Category
+// @Description Update Category
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer Token"
+// @Param categoryId path int true "categoryId"
+// @Param RequestBody body dto.UpdateRequest true "body request for update task"
+// @Success 200 {object} dto.UpdateCategoryResponse
+// @Router /categories/{categoryId} [patch]
 func (ch *categoryHandler) Update(ctx *gin.Context) {
 	categoryId, _ := strconv.Atoi(ctx.Param("categoryId"))
 
@@ -70,6 +103,17 @@ func (ch *categoryHandler) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
+// Delete implements CategoriesHandler.
+// Delete godoc
+// @Summary Delete Category
+// @Description Delete Category
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer Token"
+// @Param taskId path int true "categoryId"
+// @Success 200 {object} dto.DeleteCategoryByIdResponse
+// @Router /categories/{categoryId} [delete]
 func (ch *categoryHandler) Delete(ctx *gin.Context) {
 	categoryId, _ := strconv.Atoi(ctx.Param("categoryId"))
 

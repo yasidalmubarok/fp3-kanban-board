@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"final-project/docs"
 	"final-project/handler/category_handler"
 	taks_handler "final-project/handler/task_handler"
 	"final-project/handler/user_handler"
@@ -15,7 +16,20 @@ import (
 	"final-project/service/user_service"
 
 	"github.com/gin-gonic/gin"
+
+	swaggoFile "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+// @title Kanban Board
+// @version 1.0
+// @description Final Project 3 Kampus Merdeka
+
+// @contact.name GLNG-KS07 - Group 5
+// @contact.url https://github.com/yasidalmubarok/group-5-final-project-kanban-board
+
+// @host localhost:8080
+// @BasePath /
 
 func StartApp() {
 
@@ -41,6 +55,14 @@ func StartApp() {
 	authService := auth_service.NewAuthService(userRepo, taskRepo, categoryRepo)
 
 	route := gin.Default()
+
+	docs.SwaggerInfo.Title = "KanbanBoard"
+	docs.SwaggerInfo.Description = "Final-Project-3-Hacktiv8"
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.Schemes = []string{"http"}
+
+	route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggoFile.Handler))
 
 	userRoute := route.Group("/users")
 	{

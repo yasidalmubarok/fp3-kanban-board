@@ -38,6 +38,7 @@ func (us *userService) Register(payload *dto.NewUserRequest) (*dto.NewUserRespon
 		FullName: payload.FullName,
 		Email:    payload.Email,
 		Password: payload.Password,
+		Role: "member",
 	}
 
 	err = user.HashPassword()

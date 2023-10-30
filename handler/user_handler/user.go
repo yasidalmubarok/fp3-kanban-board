@@ -21,6 +21,16 @@ func NewUserHandler(userService user_service.UserService) *userHandler {
 	}
 }
 
+// Register implements UserHandler
+// Register godoc
+// @Summary User register
+// @Description User register
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param RequestBody body dto.NewUserRequest true "body request for user register"
+// @Success 201 {object} dto.NewUserResponse
+// @Router /users/register [post]
 func (uh *userHandler) Register(ctx *gin.Context) {
 	newUserRequest := &dto.NewUserRequest{}
 
@@ -30,8 +40,6 @@ func (uh *userHandler) Register(ctx *gin.Context) {
 		ctx.JSON(errBindJson.Status(), errBindJson)
 		return
 	}
-
-	newUserRequest.Role = "member"
 
 	response, err := uh.userService.Register(newUserRequest)
 
@@ -43,6 +51,16 @@ func (uh *userHandler) Register(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, response)
 }
 
+// Login implements UserHandler.
+// Login godoc
+// @Summary User login
+// @Description User login
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param RequestBody body dto.UserLoginRequest true "body request for user login"
+// @Success 200 {object} dto.UserLoginResponse
+// @Router /users/login [post]
 func (uh *userHandler) Login(ctx *gin.Context) {
 	userLoginRequest := &dto.UserLoginRequest{}
 
@@ -63,6 +81,17 @@ func (uh *userHandler) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
+// Updateements UserHandler.
+// Update godoc
+// @Summary User Update
+// @Description User Update
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer Token"
+// @Param RequestBody body dto.UserUpdateRequest true "body request for user login"
+// @Success 200 {object} dto.UserUpdateResponse
+// @Router /users/update-account [put]
 func (uh *userHandler) Update(ctx *gin.Context) {
 	userData, ok := ctx.MustGet("userData").(entity.User)
 
@@ -89,7 +118,17 @@ func (uh *userHandler) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-func (uh *userHandler) Delete(ctx *gin.Context)  {
+// Delete implements UserHandler.
+// Delete godoc
+// @Summary Delete User
+// @Description Delete Users
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer Token"
+// @Success 200 {object} dto.DeleteResponse
+// @Router /users/delete-account [delete]
+func (uh *userHandler) Delete(ctx *gin.Context) {
 	user, ok := ctx.MustGet("userData").(entity.User)
 
 	if !ok {
@@ -116,7 +155,6 @@ func (uh *userHandler) Admin(ctx *gin.Context) {
 		ctx.JSON(errBindJson.Status(), errBindJson)
 		return
 	}
-	newUserRequest.Role = "admin"
 
 	response, err := uh.userService.Admin(newUserRequest)
 
