@@ -28,7 +28,7 @@ import (
 // @contact.name GLNG-KS07 - Group 5
 // @contact.url https://github.com/yasidalmubarok/group-5-final-project-kanban-board
 
-// @host localhost:8080
+// @host fp3-kanban-board-production.up.railway.app
 // @BasePath /
 
 func StartApp() {
@@ -59,8 +59,7 @@ func StartApp() {
 	docs.SwaggerInfo.Title = "KanbanBoard"
 	docs.SwaggerInfo.Description = "Final-Project-3-Hacktiv8"
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:8080"
-	docs.SwaggerInfo.Schemes = []string{"http"}
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggoFile.Handler))
 

@@ -22,7 +22,7 @@ func LoadEnv() {
 	err := godotenv.Load(".env")
 
 	if err != nil {
-		log.Panicln("error while processing .env file")
+		log.Println("error while processing .env file")
 	}
 }
 
