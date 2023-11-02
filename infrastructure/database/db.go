@@ -86,6 +86,20 @@ func handleCreateRequiredTables() {
 							ON DELETE CASCADE					
 				);
 			`
+		createAdminQuery = `
+			INSERT INTO
+				users (
+					full_name,
+					email,
+					password,
+					role,
+					balance
+				)
+			VALUES
+				($1, $2, $3, 'admin', 0)
+			ON CONFLICT(email)
+			DO NOTHING
+		`
 	)
 
 	_, err = db.Exec(categoryTable)
@@ -113,45 +127,26 @@ func handleCreateRequiredTables() {
 		log.Panic("error occured while trying to create required tables:", err)
 		return
 	}
-}
 
-func seedAdmin() {
-	admin := &entity.User{
-		FullName: "admin",
-		Email:    "admin@admin.com",
-		Password: "admin123",
-		Role:     "admin",
+	user := &entity.User{
+		FullName: config.AppConfig().AdminFullName,
+		Email:    config.AppConfig().AdminEmail,
+		Password: config.AppConfig().AdminPassword,
 	}
 
-	// Hash password
-	if err := admin.HashPassword(); err != nil {
-		return
-	}
+	user.HashPassword()
 
-	insertQueryAdmin := `
-        INSERT INTO users (
-            full_name,
-            email,
-            password,
-            role
-        )
-        VALUES ($1, $2, $3, $4)
-    `
-
-	_, err := db.Exec(insertQueryAdmin, admin.FullName, admin.Email, admin.Password, admin.Role)
+	_, err = db.Exec(createAdminQuery, user.FullName, user.Email, user.Password)
 
 	if err != nil {
-		log.Println("Failed to seed admin account:", err)
+		log.Panic("error while create admin: ", err.Error())
 		return
 	}
-
-	log.Println("Admin account seed success!")
 }
 
 func InitiliazeDatabase() {
 	handleDatabaseConnection()
 	handleCreateRequiredTables()
-	seedAdmin()
 }
 
 func GetDatabaseInstance() *sql.DB {
