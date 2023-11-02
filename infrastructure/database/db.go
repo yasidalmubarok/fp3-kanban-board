@@ -93,10 +93,9 @@ func handleCreateRequiredTables() {
 					email,
 					password,
 					role,
-					balance
 				)
 			VALUES
-				($1, $2, $3, 'admin', 0)
+				($1, $2, $3, 'admin')
 			ON CONFLICT(email)
 			DO NOTHING
 		`
