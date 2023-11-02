@@ -92,7 +92,7 @@ func handleCreateRequiredTables() {
 					full_name,
 					email,
 					password,
-					role,
+					role
 				)
 			VALUES
 				($1, $2, $3, 'admin')
