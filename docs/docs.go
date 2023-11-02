@@ -114,7 +114,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "categoryId",
-                        "name": "taskId",
+                        "name": "categoryId",
                         "in": "path",
                         "required": true
                     }
