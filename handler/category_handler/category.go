@@ -111,7 +111,7 @@ func (ch *categoryHandler) Update(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "Bearer Token"
-// @Param taskId path int true "categoryId"
+// @Param categoryId path int true "categoryId"
 // @Success 200 {object} dto.DeleteCategoryByIdResponse
 // @Router /categories/{categoryId} [delete]
 func (ch *categoryHandler) Delete(ctx *gin.Context) {
