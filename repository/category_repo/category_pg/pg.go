@@ -120,27 +120,27 @@ func (c *categoryPG) GetCategory() ([]category_repo.CategoryTaskMapped, errs.Mes
 	}
 
 	for rows.Next() {
-		categoryTask := category_repo.CategoryTask{}
+		categoryTask := categoryWithTask{}
 
 		err := rows.Scan(
-			&categoryTask.Category.Id,
-			&categoryTask.Category.Type,
-			&categoryTask.Category.UpdatedAt,
-			&categoryTask.Category.CreatedAt,
-			&categoryTask.Task.Id,
-			&categoryTask.Task.Title,
-			&categoryTask.Task.Description,
-			&categoryTask.Task.UserId,
-			&categoryTask.Task.CategoryId,
-			&categoryTask.Task.CreatedAt,
-			&categoryTask.Task.UpdatedAt,
+			&categoryTask.CategoryId,
+			&categoryTask.CategoryType,
+			&categoryTask.CategoryCreatedAt,
+			&categoryTask.CategoryUpdatedAt,
+			&categoryTask.TaskId,
+			&categoryTask.TaskTitle,
+			&categoryTask.TaskDescription,
+			&categoryTask.TaskUserId,
+			&categoryTask.TaskCategoryId,
+			&categoryTask.TaskCreatedAt,
+			&categoryTask.TaskUpdatedAt,
 		)
 
 		if err != nil {
 			return nil, errs.NewInternalServerError("something went wrong" + err.Error())
 		}
 
-		categoryTasks = append(categoryTasks, categoryTask)
+		categoryTasks = append(categoryTasks, categoryTask.categoryWithTaskToEntity())
 	}
 
 	result := category_repo.CategoryTaskMapped{}
@@ -156,7 +156,7 @@ func (c *categoryPG) UpdateCategory(categoryPayLoad *entity.Category) (*dto.Upda
 	}
 
 	row := tx.QueryRow(updateCategoryById, categoryPayLoad.Id, categoryPayLoad.Type)
-	
+
 	var categoryUpdate dto.UpdateResponse
 	err = row.Scan(
 		&categoryUpdate.Id,
@@ -194,7 +194,7 @@ func (c *categoryPG) CheckCategoryId(categoryId int) (*entity.Category, errs.Mes
 	return &category, nil
 }
 
-func (c *categoryPG) DeleteCategory(categoryId int) (errs.MessageErr) {
+func (c *categoryPG) DeleteCategory(categoryId int) errs.MessageErr {
 	tx, _ := c.db.Begin()
 
 	_, err := tx.Exec(deleteCategoryById, categoryId)
