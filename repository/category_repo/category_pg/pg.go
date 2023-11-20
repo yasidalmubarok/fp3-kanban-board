@@ -116,7 +116,7 @@ func (c *categoryPG) GetCategory() ([]category_repo.CategoryTaskMapped, errs.Mes
 	rows, err := c.db.Query(getCategoryWithTask)
 
 	if err != nil {
-		return nil, errs.NewInternalServerError("something went wrong" + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	for rows.Next() {
@@ -137,7 +137,7 @@ func (c *categoryPG) GetCategory() ([]category_repo.CategoryTaskMapped, errs.Mes
 		)
 
 		if err != nil {
-			return nil, errs.NewInternalServerError("something went wrong" + err.Error())
+			return nil, errs.NewInternalServerError("something went wrong")
 		}
 
 		categoryTasks = append(categoryTasks, categoryTask.categoryWithTaskToEntity())
@@ -152,7 +152,7 @@ func (c *categoryPG) UpdateCategory(categoryPayLoad *entity.Category) (*dto.Upda
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	row := tx.QueryRow(updateCategoryById, categoryPayLoad.Id, categoryPayLoad.Type)
@@ -166,14 +166,14 @@ func (c *categoryPG) UpdateCategory(categoryPayLoad *entity.Category) (*dto.Upda
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	err = tx.Commit()
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	return &categoryUpdate, nil
@@ -186,9 +186,9 @@ func (c *categoryPG) CheckCategoryId(categoryId int) (*entity.Category, errs.Mes
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, errs.NewInternalServerError("rows not found" + err.Error())
+			return nil, errs.NewInternalServerError("category not found")
 		}
-		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	return &category, nil

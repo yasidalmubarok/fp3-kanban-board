@@ -8,7 +8,7 @@ import (
 	"final-project/repository/task_repo"
 )
 
-const(
+const (
 	createTask = `
 		INSERT INTO tasks (
 			user_id,
@@ -97,15 +97,13 @@ const(
 		WHERE
 			id = $1
 	`
-
-
 )
 
 type taskPG struct {
 	db *sql.DB
 }
 
-func NewTaskRepo(db *sql.DB) task_repo.Repository{
+func NewTaskRepo(db *sql.DB) task_repo.Repository {
 	return &taskPG{
 		db: db,
 	}
@@ -116,7 +114,7 @@ func (t *taskPG) CreateNewTask(taskPayLoad *entity.Task) (*dto.NewTasksResponse,
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong "+ err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	var task dto.NewTasksResponse
@@ -124,8 +122,8 @@ func (t *taskPG) CreateNewTask(taskPayLoad *entity.Task) (*dto.NewTasksResponse,
 	row := tx.QueryRow(
 		createTask,
 		taskPayLoad.UserId,
-		taskPayLoad.Title, 
-		taskPayLoad.Description, 
+		taskPayLoad.Title,
+		taskPayLoad.Description,
 		taskPayLoad.CategoryId,
 	)
 	err = row.Scan(
@@ -140,13 +138,13 @@ func (t *taskPG) CreateNewTask(taskPayLoad *entity.Task) (*dto.NewTasksResponse,
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong" + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	return &task, nil
@@ -157,7 +155,7 @@ func (t *taskPG) GetTask() ([]task_repo.TaskUserMapped, errs.MessageErr) {
 	rows, err := t.db.Query(getTaskWithUser)
 
 	if err != nil {
-		return nil, errs.NewInternalServerError("something went wrong" + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	for rows.Next() {
@@ -177,7 +175,7 @@ func (t *taskPG) GetTask() ([]task_repo.TaskUserMapped, errs.MessageErr) {
 		)
 
 		if err != nil {
-			return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+			return nil, errs.NewInternalServerError("something went wrong")
 		}
 
 		tasksUser = append(tasksUser, taskUser)
@@ -189,14 +187,14 @@ func (t *taskPG) GetTask() ([]task_repo.TaskUserMapped, errs.MessageErr) {
 
 func (t *taskPG) GetTaskById(id int) (*entity.Task, errs.MessageErr) {
 	var taskUser entity.Task
-	
+
 	err := t.db.QueryRow(getTaskById, id).Scan(&taskUser.Id, &taskUser.UserId)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, errs.NewNotFoundError("task not found" + err.Error())
+			return nil, errs.NewNotFoundError("task not found")
 		}
-		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	return &taskUser, nil
@@ -207,11 +205,11 @@ func (t *taskPG) UpdateTaskById(taskPayLoad *entity.Task) (*dto.UpdateTaskRespon
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong" + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	row := tx.QueryRow(updateTaskById, taskPayLoad.Id, taskPayLoad.Title, taskPayLoad.Description)
-	
+
 	var taskUpdate dto.UpdateTaskResponse
 	err = row.Scan(
 		&taskUpdate.Id,
@@ -225,14 +223,14 @@ func (t *taskPG) UpdateTaskById(taskPayLoad *entity.Task) (*dto.UpdateTaskRespon
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	err = tx.Commit()
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong "+ err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	return &taskUpdate, nil
@@ -243,11 +241,11 @@ func (t *taskPG) UpdateTaskByStatus(taskPayLoad *entity.Task) (*dto.UpdateTaskRe
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong" + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	row := tx.QueryRow(updateTaskByStatus, taskPayLoad.Id, taskPayLoad.Status)
-	
+
 	var taskUpdate dto.UpdateTaskResponseByStatus
 	err = row.Scan(
 		&taskUpdate.Id,
@@ -261,14 +259,14 @@ func (t *taskPG) UpdateTaskByStatus(taskPayLoad *entity.Task) (*dto.UpdateTaskRe
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	err = tx.Commit()
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong "+ err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	return &taskUpdate, nil
@@ -294,7 +292,7 @@ func (t *taskPG) UpdateTaskByCategoryId(taskPayLoad *entity.Task) (*dto.UpdateCa
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	err = tx.Commit()
@@ -307,7 +305,7 @@ func (t *taskPG) UpdateTaskByCategoryId(taskPayLoad *entity.Task) (*dto.UpdateCa
 	return &taskUpdate, nil
 }
 
-func (t *taskPG) DeleteTaskById(taskId int) (errs.MessageErr) {
+func (t *taskPG) DeleteTaskById(taskId int) errs.MessageErr {
 	tx, err := t.db.Begin()
 
 	if err != nil {

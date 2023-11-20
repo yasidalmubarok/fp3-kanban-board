@@ -89,8 +89,6 @@ const (
 			)
 		VALUES ('admin', 'admin@hacktivate.com', $1, 'admin')
 	`
-
-	
 )
 
 type userPG struct {
@@ -152,7 +150,7 @@ func (u *userPG) UpdateUser(userPayLoad *entity.User) (*dto.UserUpdateResponse, 
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong " + err.Error())
+		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
 	err = tx.Commit()
@@ -235,7 +233,7 @@ func (u *userPG) Admin(userPayLoad *entity.User) errs.MessageErr {
 
 	if err != nil {
 		tx.Rollback()
-		return errs.NewInternalServerError("something went wrong " + err.Error())
+		return errs.NewInternalServerError("something went wrong")
 	}
 
 	err = tx.Commit()
