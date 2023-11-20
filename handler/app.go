@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"final-project/docs"
+	_ "final-project/docs"
 	"final-project/handler/category_handler"
 	taks_handler "final-project/handler/task_handler"
 	"final-project/handler/user_handler"
@@ -55,11 +55,6 @@ func StartApp() {
 	authService := auth_service.NewAuthService(userRepo, taskRepo, categoryRepo)
 
 	route := gin.Default()
-
-	docs.SwaggerInfo.Title = "KanbanBoard"
-	docs.SwaggerInfo.Description = "Final-Project-3-Hacktiv8"
-	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggoFile.Handler))
 
