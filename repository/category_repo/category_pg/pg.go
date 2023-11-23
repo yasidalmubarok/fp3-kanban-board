@@ -111,8 +111,8 @@ func (c *categoryPG) Create(categoryPayLoad *entity.Category) (*dto.NewCategoryR
 	return &category, nil
 }
 
-func (c *categoryPG) GetCategory() ([]category_repo.CategoryTaskMapped, errs.MessageErr) {
-	categoryTasks := []category_repo.CategoryTask{}
+func (c *categoryPG) GetCategory() ([]*category_repo.CategoryTaskMapped, errs.MessageErr) {
+	categoryTasks := []*category_repo.CategoryTask{}
 	rows, err := c.db.Query(getCategoryWithTask)
 
 	if err != nil {

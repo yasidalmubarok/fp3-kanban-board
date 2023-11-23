@@ -85,6 +85,14 @@ func NewUnprocessibleEntityError(message string) MessageErr {
 	}
 }
 
+func NewConflictError(message string) MessageErr {
+	return &ErrorData{
+		ErrMessage: message,
+		ErrStatus:  http.StatusConflict,
+		ErrError:   "CONFLICT_ERROR",
+	}
+}
+
 func CheckErr(err error) {
 	if err != nil {
 		log.Fatalln("Error:", err.Error())

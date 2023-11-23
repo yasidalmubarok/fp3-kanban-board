@@ -22,8 +22,8 @@ type categoryWithTask struct {
 	TaskUpdatedAt     sql.NullTime
 }
 
-func (c *categoryWithTask) categoryWithTaskToEntity() category_repo.CategoryTask {
-	return category_repo.CategoryTask{
+func (c *categoryWithTask) categoryWithTaskToEntity() *category_repo.CategoryTask {
+	return &category_repo.CategoryTask{
 		Category: entity.Category{
 			Id:        c.CategoryId,
 			Type:      c.CategoryType,

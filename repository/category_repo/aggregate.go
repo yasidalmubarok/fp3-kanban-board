@@ -5,61 +5,49 @@ import (
 	"time"
 )
 
-type task struct {
-	Id          int       `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	UserId      int       `json:"userId"`
-	CategoryId  int       `json:"categoryId"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-}
-
 type CategoryTask struct {
 	Category entity.Category
 	Task     entity.Task
 }
 
 type CategoryTaskMapped struct {
-	Id        int       `json:"id"`
-	Type      string    `json:"type"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	Tasks     []task    `json:"Task"`
+	Id        int           `json:"id"`
+	Type      string        `json:"type"`
+	CreatedAt time.Time     `json:"createdAt"`
+	UpdatedAt time.Time     `json:"updatedAt"`
+	Tasks     []entity.Task `json:"Task"`
 }
 
-func (ctm *CategoryTaskMapped) HandleMappingCategoryWithTask(categoryTask []CategoryTask) []CategoryTaskMapped {
-	categoryTasksMapped := make(map[int]CategoryTaskMapped)
+func (ctm *CategoryTaskMapped) HandleMappingCategoryWithTask(categoryTask []*CategoryTask) []*CategoryTaskMapped {
+	categoryTasksMapped := []*CategoryTaskMapped{}
 
 	for _, eachCategoryTask := range categoryTask {
-		categoryId := eachCategoryTask.Category.Id
-		categoryTaskMapped, exists := categoryTasksMapped[categoryId]
-		if !exists {
-			categoryTaskMapped = CategoryTaskMapped{
+		isCategoryExist := false
+
+		for i := range categoryTasksMapped {
+			if eachCategoryTask.Category.Id == categoryTask[i].Category.Id {
+				isCategoryExist = true
+				categoryTasksMapped[i].Tasks = append(categoryTasksMapped[i].Tasks, eachCategoryTask.Task)
+				break
+			}
+		}
+
+		if !isCategoryExist {
+			categoryTaskMapped := &CategoryTaskMapped{
 				Id:        eachCategoryTask.Category.Id,
 				Type:      eachCategoryTask.Category.Type,
 				CreatedAt: eachCategoryTask.Category.CreatedAt,
 				UpdatedAt: eachCategoryTask.Category.UpdatedAt,
 			}
-		}
 
-		task := task{
-			Id:          eachCategoryTask.Task.Id,
-			Title:       eachCategoryTask.Task.Title,
-			Description: eachCategoryTask.Task.Description,
-			UserId:      eachCategoryTask.Task.UserId,
-			CategoryId:  eachCategoryTask.Task.CategoryId,
-			CreatedAt:   eachCategoryTask.Task.CreatedAt,
-			UpdatedAt:   eachCategoryTask.Task.UpdatedAt,
+			categoryTaskMapped.Tasks = append(categoryTaskMapped.Tasks, eachCategoryTask.Task)			
+			categoryTasksMapped = append(categoryTasksMapped, categoryTaskMapped)
+
+			if categoryTaskMapped.Tasks[0].Id == 0 {
+				categoryTaskMapped.Tasks = []entity.Task{}
+			}
 		}
-		categoryTaskMapped.Tasks = append(categoryTaskMapped.Tasks, task)
-		categoryTasksMapped[categoryId] = categoryTaskMapped
 	}
 
-	categoryTasks := []CategoryTaskMapped{}
-	for _, categoryTask := range categoryTasksMapped {
-		categoryTasks = append(categoryTasks, categoryTask)
-	}
-
-	return categoryTasks
+	return categoryTasksMapped
 }
