@@ -14,8 +14,8 @@ type TaskDatas struct {
 
 //====== POST ======
 type NewTasksRequest struct {
-	Title       string `json:"title" valid:"required~full_name cannot be empty"`
-	Description string `json:"description" valid:"required~full_name cannot be empty"`
+	Title       string `json:"title" valid:"required~Title cannot be empty"`
+	Description string `json:"description" valid:"required~Description cannot be empty"`
 	CategoryId  int    `json:"category_id"`
 }
 
