@@ -87,7 +87,7 @@ func (cs *categoryService) Update(categoryId int, categoryPayLoad *dto.UpdateReq
 
 	if err != nil {
 		if err.Status() == http.StatusNotFound {
-			return nil, errs.NewBadRequest("invalid user")
+			return nil, errs.NewNotFoundError("category not found")
 		}
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (cs *categoryService) Update(categoryId int, categoryPayLoad *dto.UpdateReq
 	}
 
 	category := &entity.Category{
-		Id: categoryId,
+		Id:   categoryId,
 		Type: categoryPayLoad.Type,
 	}
 
@@ -109,8 +109,8 @@ func (cs *categoryService) Update(categoryId int, categoryPayLoad *dto.UpdateReq
 
 	return &dto.UpdateCategoryResponse{
 		StatusCode: http.StatusOK,
-		Message: "Category has been succesfully updated",
-		Data: response,
+		Message:    "Category has been succesfully updated",
+		Data:       response,
 	}, nil
 }
 
@@ -119,7 +119,7 @@ func (cs *categoryService) Delete(categoryId int) (*dto.DeleteCategoryByIdRespon
 
 	if err != nil {
 		if err.Status() == http.StatusNotFound {
-			return nil, errs.NewBadRequest("invalid user")
+			return nil, errs.NewNotFoundError("category not found")
 		}
 		return nil, err
 	}

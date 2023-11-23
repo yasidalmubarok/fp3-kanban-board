@@ -45,7 +45,7 @@ func (ts *taskService) Create(userId int, taskPayLoad *dto.NewTasksRequest) (*dt
 
 	if err != nil {
 		if err.Status() == http.StatusNotFound {
-			return nil, err
+			return nil, errs.NewNotFoundError("category not found")
 		}
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func (ts *taskService) UpdateTask(taskId int, taskPayLoad *dto.UpdateTaskRequest
 
 	if err != nil {
 		if err.Status() == http.StatusNotFound {
-			return nil, errs.NewBadRequest("invalid user")
+			return nil, errs.NewNotFoundError("task not found")
 		}
 		return nil, err
 	}
@@ -144,7 +144,7 @@ func (ts *taskService) UpdateTaskByStatus(taskId int, taskPayLoad *dto.UpdateTas
 
 	if err != nil {
 		if err.Status() == http.StatusNotFound {
-			return nil, errs.NewBadRequest("invalid user")
+			return nil, errs.NewNotFoundError("task not found")
 		}
 		return nil, err
 	}
@@ -182,7 +182,7 @@ func (ts *taskService) UpdateTaskByCategoryId(taskId int, taskPayLoad *dto.Updat
 
 	if err != nil {
 		if err.Status() == http.StatusNotFound {
-			return nil, errs.NewBadRequest("invalid user")
+			return nil, errs.NewNotFoundError("task not found")
 		}
 		return nil, err
 	}
@@ -223,7 +223,7 @@ func (ts *taskService) DeleteTaskById(taskId int) (*dto.DeleteTaskByIdResponse, 
 
 	if err != nil {
 		if err.Status() == http.StatusNotFound {
-			return nil, errs.NewBadRequest("invalid user")
+			return nil, errs.NewNotFoundError("task not found")
 		}
 		return nil, err
 	}
