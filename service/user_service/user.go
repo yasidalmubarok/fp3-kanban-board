@@ -34,11 +34,17 @@ func (us *userService) Register(payload *dto.NewUserRequest) (*dto.NewUserRespon
 		return nil, err
 	}
 
+	u, _ := us.userRepo.GetUserByEmail(payload.Email)
+
+	if u.Email == payload.Email {
+		return nil, errs.NewConflictError("email has been used")
+	}
+
 	user := &entity.User{
 		FullName: payload.FullName,
 		Email:    payload.Email,
 		Password: payload.Password,
-		Role: "member",
+		Role:     "member",
 	}
 
 	err = user.HashPassword()
@@ -155,7 +161,7 @@ func (us *userService) Delete(userId int) (*dto.DeleteResponse, errs.MessageErr)
 }
 
 func (us *userService) Admin(payload *dto.NewUserRequest) (*dto.AdminResponse, errs.MessageErr) {
-	err :=  helper.ValidateStruct(payload)
+	err := helper.ValidateStruct(payload)
 
 	if err != nil {
 		return nil, err
@@ -163,9 +169,9 @@ func (us *userService) Admin(payload *dto.NewUserRequest) (*dto.AdminResponse, e
 
 	admin := &entity.User{
 		FullName: "admin",
-		Email: "admin@hacktivate.com",
+		Email:    "admin@hacktivate.com",
 		Password: "admin477",
-		Role: "admin",
+		Role:     "admin",
 	}
 
 	err = admin.HashPassword()
@@ -185,5 +191,3 @@ func (us *userService) Admin(payload *dto.NewUserRequest) (*dto.AdminResponse, e
 	}
 	return &response, nil
 }
-
-
