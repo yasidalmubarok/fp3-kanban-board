@@ -110,7 +110,7 @@ func (u *userPG) CreateNewUser(userPayLoad *entity.User) (*dto.NewUserResponse, 
 		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
-	var user dto.NewUserResponse
+	user := dto.NewUserResponse{}
 	row := tx.QueryRow(createNewUser, userPayLoad.FullName, userPayLoad.Email, userPayLoad.Password)
 
 	err = row.Scan(&user.Id, &user.FullName, &user.Email, &user.CreatedAt)
@@ -140,7 +140,7 @@ func (u *userPG) UpdateUser(userPayLoad *entity.User) (*dto.UserUpdateResponse, 
 
 	row := tx.QueryRow(updateUser, userPayLoad.Id, userPayLoad.FullName, userPayLoad.Email)
 
-	var userUpdate dto.UserUpdateResponse
+	userUpdate := dto.UserUpdateResponse{}
 	err = row.Scan(
 		&userUpdate.Id,
 		&userUpdate.FullName,
@@ -188,7 +188,7 @@ func (u *userPG) DeleteUser(userId int) errs.MessageErr {
 }
 
 func (u *userPG) GetUserByEmail(email string) (*entity.User, errs.MessageErr) {
-	var user entity.User
+	user := entity.User{}
 
 	row := u.db.QueryRow(getUserByEmail, email)
 
@@ -196,16 +196,16 @@ func (u *userPG) GetUserByEmail(email string) (*entity.User, errs.MessageErr) {
 
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
-			return nil, errs.NewNotFoundError("user not found")
+			return &user, errs.NewNotFoundError("user not found")
 		}
-		return nil, errs.NewInternalServerError("something went wrong")
+		return &user, errs.NewInternalServerError("something went wrong")
 	}
 
 	return &user, nil
 }
 
 func (u *userPG) GetUserById(userId int) (*entity.User, errs.MessageErr) {
-	var user entity.User
+	user := entity.User{}
 
 	row := u.db.QueryRow(getUserById, userId)
 
